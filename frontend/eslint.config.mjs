@@ -25,8 +25,10 @@ const eslintConfig = [
     },
     rules: {
       'prettier/prettier': 'error',
-      'react/jsx-props-no-spreading': 'off', // Deshabilita la regla
+      'react/jsx-props-no-spreading': 'off',
+      'import/no-extraneous-dependencies': 'off',
     },
+    
   },
 ];
 
