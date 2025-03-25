@@ -101,7 +101,10 @@ export default function Footer() {
                 <ul className="mt-6 space-y-4">
                   {navigation.solutions.map((item) => (
                     <li key={item.name}>
-                      <a href={item.href} className="text-sm/6 text-gray-600 hover:text-gray-900">
+                      <a
+                        href={item.href}
+                        className="text-sm/6 text-gray-600 hover:text-gray-900 dark:text-gray-400"
+                      >
                         {item.name}
                       </a>
                     </li>
@@ -113,7 +116,10 @@ export default function Footer() {
                 <ul className="mt-6 space-y-4">
                   {navigation.support.map((item) => (
                     <li key={item.name}>
-                      <a href={item.href} className="text-sm/6 text-gray-600 hover:text-gray-900">
+                      <a
+                        href={item.href}
+                        className="text-sm/6 text-gray-600 hover:text-gray-900 dark:text-gray-400"
+                      >
                         {item.name}
                       </a>
                     </li>
@@ -127,7 +133,10 @@ export default function Footer() {
                 <ul className="mt-6 space-y-4">
                   {navigation.company.map((item) => (
                     <li key={item.name}>
-                      <a href={item.href} className="text-sm/6 text-gray-600 hover:text-gray-900">
+                      <a
+                        href={item.href}
+                        className="text-sm/6 text-gray-600 hover:text-gray-900 dark:text-gray-400"
+                      >
                         {item.name}
                       </a>
                     </li>
@@ -139,7 +148,10 @@ export default function Footer() {
                 <ul className="mt-6 space-y-4">
                   {navigation.legal.map((item) => (
                     <li key={item.name}>
-                      <a href={item.href} className="text-sm/6 text-gray-600 hover:text-gray-900">
+                      <a
+                        href={item.href}
+                        className="text-sm/6 text-gray-600 hover:text-gray-900 dark:text-gray-400"
+                      >
                         {item.name}
                       </a>
                     </li>
@@ -152,7 +164,7 @@ export default function Footer() {
             <h3 className="text-sm/6 font-semibold text-gray-900 dark:text-white">
               Subscribe to our newsletter
             </h3>
-            <p className="mt-2 text-sm/6 text-gray-600 dark:text-white">
+            <p className="mt-2 text-sm/6 text-gray-600 dark:text-gray-400">
               The latest news, articles, and resources, sent to your inbox weekly.
             </p>
             <form className="mt-6 sm:flex sm:max-w-md">
@@ -186,7 +198,7 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <p className="dark:dark-primary mt-8 text-sm/6 text-gray-600 md:order-1 md:mt-0">
+          <p className="mt-8 text-sm/6 text-gray-600 md:order-1 md:mt-0 dark:text-white">
             &copy; 2024 Zerym Inc., Inc. All rights reserved.
           </p>
         </div>
