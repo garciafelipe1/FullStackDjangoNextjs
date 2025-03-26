@@ -1,14 +1,13 @@
 import HoverClass from "@/utils/api/HoverClass";
-import Link from "next/link";
-import { use } from "react";
+import Link from 'next/link';
 
-
-interface componentProps {
-    children: React.ReactNode;
-    href?: string
-    useHover?: boolean
+interface ComponentProps {
+  children: React.ReactNode;
+  href?: string;
+  useHover?: boolean;
 }
-export default function NavbarLink({ children, href = '/', useHover=true }: componentProps) {
+
+export default function NavbarLink({ children, href = '/', useHover = true }: ComponentProps) {
   return (
     <Link href={href} className="inline-flex items-center">
       <div className={`${useHover ? HoverClass : ''}`}>{children}</div>
@@ -17,6 +16,7 @@ export default function NavbarLink({ children, href = '/', useHover=true }: comp
 }
 
 NavbarLink.defaultProps = {
-  href: "/",
-  useHover: true
+  href: '/',
+  useHover: true,
 };
+

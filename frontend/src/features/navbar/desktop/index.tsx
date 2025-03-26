@@ -1,6 +1,6 @@
 import AuthLinks from "../auth/AuthLinks";
 import Image from "next/image";
-import GuestLinks from "../gues/GuestLinks";
+import GuestLinks from "../guest/GuestLinks";
 import Container from "./Container";
 import Header from "./Header";
 import NavbarLink from "./NavbarLink";

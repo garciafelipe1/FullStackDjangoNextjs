@@ -9,11 +9,11 @@ interface ComponentsProps {
   maxTextLength?: number;
   showmMaxTextLength?: boolean;
   placeholder?: string;
-  title?: string; // Posible error tipográfico, podría ser "title"
+  title?: string;
   description?: string;
 }
 
-export default function EditEmail({
+export default function EditText({
   data,
   setData,
   required = false,
@@ -21,22 +21,16 @@ export default function EditEmail({
   maxTextLength = 120,
   showmMaxTextLength = false,
   placeholder = '',
-  title = '', // Posible error tipográfico, podría ser "title"
+  title = '',
   description = '',
 }: ComponentsProps) {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value;
 
-    const handleInputChange=(e:ChangeEvent<HTMLInputElement>)=>{
-        let inputValue= e.target.value
-
-        inputValue=inputValue
-            .replace(/<script.*?>.*?<\/script>/gi,'')
-            .replace(/<\/?[^>]+(>|$)/g,'')
-            .replace(/[;:"!]/g,'')
-
-        setData(inputValue)
-    }
-
-
+    inputValue = inputValue.replace(/^a-zA-Z0-9\s',:.?-ÁÉÍÓÚáéíóú]+$/g, '');
+      
+    setData(inputValue);
+  };
 
   return (
     <div>
@@ -46,7 +40,8 @@ export default function EditEmail({
       </span>
       <div className={`${inputFormClassName}`}>
         <input
-          type="email"
+        
+          type="text"
           required={required}
           disabled={disable}
           placeholder={placeholder}
@@ -56,8 +51,8 @@ export default function EditEmail({
           onChange={handleInputChange}
         />
         {showmMaxTextLength && (
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <span className="dark:text-dark-txt-secondary text-gray-500 sm:text-sm">
+          <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3'>
+            <span className='dark:text-dark-txt-secondary text-gray-500 sm:text-sm'>
               {data?.length} of {maxTextLength}
             </span>
           </div>
@@ -67,7 +62,7 @@ export default function EditEmail({
   );
 }
 
-EditEmail.defaultProps = {
+EditText.defaultProps = {
   required: false,
   disable: false,
   maxTextLength: 120,

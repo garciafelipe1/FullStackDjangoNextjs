@@ -13,7 +13,7 @@ interface ComponentsProps {
   description?: string;
 }
 
-export default function EditEmail({
+export default function EditPassword({
   data,
   setData,
   required = false,
@@ -24,19 +24,13 @@ export default function EditEmail({
   title = '', // Posible error tipográfico, podría ser "title"
   description = '',
 }: ComponentsProps) {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    let inputValue = e.target.value;
 
-    const handleInputChange=(e:ChangeEvent<HTMLInputElement>)=>{
-        let inputValue= e.target.value
+    inputValue = inputValue.replace(/^a-zA-Z0-9\s',:.?-ÁÉÍÓÚáéíóú!@#$%^&*()_+=?]/g, '');
 
-        inputValue=inputValue
-            .replace(/<script.*?>.*?<\/script>/gi,'')
-            .replace(/<\/?[^>]+(>|$)/g,'')
-            .replace(/[;:"!]/g,'')
-
-        setData(inputValue)
-    }
-
-
+    setData(inputValue);
+  };
 
   return (
     <div>
@@ -46,7 +40,7 @@ export default function EditEmail({
       </span>
       <div className={`${inputFormClassName}`}>
         <input
-          type="email"
+          type="password"
           required={required}
           disabled={disable}
           placeholder={placeholder}
@@ -67,7 +61,7 @@ export default function EditEmail({
   );
 }
 
-EditEmail.defaultProps = {
+EditPassword.defaultProps = {
   required: false,
   disable: false,
   maxTextLength: 120,
