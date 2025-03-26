@@ -1,9 +1,17 @@
 import '@/styles/globals.css';
 import type { NextComponentType, NextPageContext } from 'next';
 import type { AppProps } from 'next/app';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import React from 'react';
+import { Provider } from 'react-redux';
 
 import { ThemeProvider } from 'next-themes';
+import wrapper from '@/redux/store';
+
+
+
 
 export type NextLayoutComponentType<P = {}> = NextComponentType<NextPageContext, any, P> & {
   getLayout?: (page: React.ReactNode) => React.ReactNode;
@@ -11,9 +19,17 @@ export type NextLayoutComponentType<P = {}> = NextComponentType<NextPageContext,
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = (Component as NextLayoutComponentType).getLayout || ((page:React.ReactNode) => page);
-  return( 
-  <ThemeProvider enableSystem attribute="class">
-  {getLayout(<Component {...pageProps} />)}
-  </ThemeProvider>
-  )
+
+  const {store, props} = wrapper.useWrappedStore(pageProps);
+
+
+  return (
+    <Provider store={store}>
+      <ThemeProvider enableSystem attribute="class">
+        {getLayout(<Component {...props} />)}
+        <ToastContainer className="bottom-0" position='bottom-right' />
+      </ThemeProvider>
+    </Provider>
+
+  );
 }
