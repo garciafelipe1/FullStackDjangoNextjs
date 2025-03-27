@@ -1,6 +1,7 @@
 import inputClassName from '@/utils/api/inputClassName';
 import { ChangeEvent, Component, ReactElement } from 'react';
 import inputFormClassName from '@/utils/api/InputFormClassName';
+import { useState } from 'react';
 interface ComponentsProps {
   data: string;
   setData: (value: string) => void;
@@ -31,7 +32,9 @@ export default function EditPassword({
 
     setData(inputValue);
   };
-
+  
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
   return (
     <div>
       <span className="text-grey-800 dark:text-dark-txt block text-sm font-bold">{title}</span>
@@ -40,7 +43,7 @@ export default function EditPassword({
       </span>
       <div className={`${inputFormClassName}`}>
         <input
-          type="password"
+          type={showPassword ? 'text' : 'password'}
           required={required}
           disabled={disable}
           placeholder={placeholder}
@@ -49,6 +52,13 @@ export default function EditPassword({
           className={`${inputClassName}`}
           onChange={handleInputChange}
         />
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="absolute inset-y-0 right-0 flex items-center pr-3"
+        >
+          {showPassword ? 'Hide' : 'Show '}
+        </button>
         {showmMaxTextLength && (
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
             <span className="dark:text-dark-txt-secondary text-gray-500 sm:text-sm">
@@ -67,6 +77,6 @@ EditPassword.defaultProps = {
   maxTextLength: 120,
   showmMaxTextLength: false,
   placeholder: '',
-  tile: '', // Posible error tipográfico, podría ser "title"
+  title: '',
   description: '',
 };

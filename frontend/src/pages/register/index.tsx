@@ -1,38 +1,66 @@
-
-import Button from "@/components/Buttom";
-import EditEmail from "@/components/forms/EditEmail";
-import EditPassword from "@/components/forms/EditPassword";
-import EditText from "@/components/forms/EditText";
-import Layout from "@/hocs/Layout";
+import Botton from '@/components/Buttom';
+import EditEmail from '@/components/forms/EditEmail';
+import EditPassword from '@/components/forms/EditPassword';
+import EditText from '@/components/forms/EditText';
+import Layout from '@/hocs/Layout';
 import { ReactElement } from 'react';
-import { useState } from "react";
+import { useState } from 'react';
 import usePasswordValidation from '@/hooks/usePasswordValidation';
+import { UnknownAction } from 'redux';
+import { useDispatch } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { ToastError } from '@/components/toast/toast';
+import { IRegisterProps } from '../../redux/actions/auth/interfaces';
+import { register } from '../../redux/actions/auth/actions';
+import LoadingMoon from '@/components/loaders/LoadingMoon';
 
+export default function Page() {
+  const [email, setEmail] = useState<string>('');
 
+  const [firstname, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
 
-export default function Page(){
+  const [username, setUsername] = useState<string>('');
 
+  const [password, setPassword] = useState<string>('');
+  const [rePassword, setRePassword] = useState<string>('');
 
-    const[email,setEmail]= useState<string>('')
+  const { canSubmit, PasswordValidationText } = usePasswordValidation({
+    password,
+    rePassword,
+    username,
+  });
 
-    const [firstname, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    
-    const [username, setUsername] = useState<string>('');
+  const dispatch: ThunkDispatch<any, any, UnknownAction> = useDispatch();
+  const [loading, setLoading] = useState<boolean>(false);
 
-    const [password, setPassword] = useState<string>('');
-    const [rePassword, setRePassword] = useState<string>('');
-    
-    const { canSubmit, PasswordValidationText } = usePasswordValidation({
-      password,
-      rePassword,
-      username,
-    });
-    const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
+    if (!canSubmit) {
+      ToastError('Ensure all fields in the form are complete and meet the requirements');
+      return;
+    }
+
+    const registerData: IRegisterProps = {
+      email,
+      username,
+      first_name: firstname,
+      last_name: lastName,
+      password,
+      re_password: rePassword,
     };
 
+    console.log(registerData)
+    try {
+      setLoading(true);
+      await dispatch(register(registerData));
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+ };
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-32 lg:px-8">
@@ -60,13 +88,13 @@ export default function Page(){
             placeholder="YourEmail@gmail.com"
             required
           />
-
           <EditPassword data={password} setData={setPassword} title="password" required />
           <EditPassword data={rePassword} setData={setRePassword} title="Repassword" required />
           {PasswordValidationText()}
-          <Button hoverEffect type="submit">
-            Register
-          </Button>
+          <Botton disabled={loading} hoverEffect={!loading} type='submit'>
+            {loading ? <LoadingMoon /> : 'Register'}
+            
+          </Botton>
         </form>
 
         <p className="mt-10 text-center text-sm/6 text-gray-500">
@@ -78,10 +106,8 @@ export default function Page(){
       </div>
     </div>
   );
- 
 }
 
 Page.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
-  
-}
+};
