@@ -1,7 +1,7 @@
-import { UnknownAction, Dispatch } from 'redux';
+import {  Dispatch } from 'redux';
 import { ToastSuccess, ToastError } from '@/components/toast/toast';
-import { SIGNUP_FAIL, SIGNUP_SUCCESS } from "./types"
-import type { IRegisterProps } from './interfaces';
+import { SIGNUP_FAIL, SIGNUP_SUCCESS,ACTIVATION_SUCCESS,ACTIVATION_FAIL } from "./types"
+import type { IRegisterProps, IActivationsProps, IResendActivationProps } from './interfaces';
 
 export const register = (props:IRegisterProps) => async (dispatch:Dispatch) => {
 
@@ -46,9 +46,73 @@ export const register = (props:IRegisterProps) => async (dispatch:Dispatch) => {
     }catch(err){
         dispatch({
             type:SIGNUP_FAIL,
-            payload:err
         })
     }
     
 }
-export const activate =() =>  {}
+
+
+
+
+
+
+export const activate = (props: IActivationsProps) => async (dispatch: Dispatch) => {
+  try {
+    const body = JSON.stringify({
+      uid: props.uid,
+      token: props.token,
+    });
+
+    const res = await fetch('/api/auth/activate', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
+
+    if (res.status === 204) {
+      dispatch({
+        type: ACTIVATION_SUCCESS,
+      });
+      ToastSuccess('Your account has been activated, you may now login.');
+    } else {
+      dispatch({
+        type: ACTIVATION_FAIL,
+      });
+      ToastError('There was an error activating your account.');
+    }
+  } catch (err) {
+    dispatch({
+      type: ACTIVATION_FAIL,
+    });
+  }
+};
+
+export const resend_activation = (props: IResendActivationProps) => async (dispatch: Dispatch) => {
+  try {
+    const body = JSON.stringify({
+      email: props.email,
+    });
+
+    const res = await fetch('/api/auth/resend_activation', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body,
+    });
+
+    if (res.status === 204) {
+      
+      ToastSuccess('we have send you email ');
+    } else {
+      
+      ToastError('There an error resending the activation email');
+    }
+  } catch (err) {
+    
+  }
+};

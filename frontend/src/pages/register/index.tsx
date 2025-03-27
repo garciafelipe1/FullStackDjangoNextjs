@@ -13,6 +13,7 @@ import { ToastError } from '@/components/toast/toast';
 import { IRegisterProps } from '../../redux/actions/auth/interfaces';
 import { register } from '../../redux/actions/auth/actions';
 import LoadingMoon from '@/components/loaders/LoadingMoon';
+import Link from 'next/link';
 
 export default function Page() {
   const [email, setEmail] = useState<string>('');
@@ -91,17 +92,19 @@ export default function Page() {
           <EditPassword data={password} setData={setPassword} title="password" required />
           <EditPassword data={rePassword} setData={setRePassword} title="Repassword" required />
           {PasswordValidationText()}
-          <Botton disabled={loading} hoverEffect={!loading} type='submit'>
+          <Botton disabled={loading} hoverEffect={!loading} type="submit">
             {loading ? <LoadingMoon /> : 'Register'}
-            
           </Botton>
         </form>
 
         <p className="mt-10 text-center text-sm/6 text-gray-500">
-          Not a member?{' '}
-          <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-            Start a 14 day free trial
-          </a>
+          No te llevo el correo de activacion? {''}
+          <Link
+            href="/resend-activation"
+            className="font-semibold text-indigo-600 hover:text-indigo-500"
+          >
+            Reenviar correo
+          </Link>
         </p>
       </div>
     </div>

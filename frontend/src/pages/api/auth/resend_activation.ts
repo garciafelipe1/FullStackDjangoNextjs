@@ -1,6 +1,5 @@
-
-
 import type { NextApiRequest, NextApiResponse } from 'next';
+
 type Data = {
   name?: string;
   error?: string;
@@ -13,9 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     });
   }
 
- 
   try {
-    const apiRes = await fetch(`${process.env.API_URL}/auth/users/`, {
+    const apiRes = await fetch(`${process.env.API_URL}/auth/users/resend_activation/`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -24,14 +22,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       body: JSON.stringify(req.body),
     });
 
-    console.log(apiRes)
-
-    const data = await apiRes.json();
-    return res.status(apiRes.status).json(data);
+    return res.status(apiRes.status).json({ name: 'email sent successfuly' });
   } catch (err) {
     return res.status(500).json({
-      error: 'something went wrong',
+      error: 'Something went wrong',
     });
   }
 }
-
