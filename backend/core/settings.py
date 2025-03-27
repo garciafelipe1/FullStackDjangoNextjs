@@ -24,9 +24,12 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS")
 
+SITE_ID=1
+
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -217,7 +220,7 @@ DJOSER = {
     
     'PASSWORD_RESET_CONFIRM_URL': 'email/password_reset_confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'email/username_reset_confirm/{uid}/{token}',
-    'ACTIVATION_URL': 'email/activation/{uid}/{token}',
+    'ACTIVATION_URL': 'activate/?uid={uid}&token={token}',
     
     
     
