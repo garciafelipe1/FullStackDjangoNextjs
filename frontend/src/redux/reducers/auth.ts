@@ -1,4 +1,5 @@
 
+import { IUser } from "@/interfaces/auth/IUser";
 import { 
    SIGNUP_SUCCESS,
    SIGNUP_FAIL,
@@ -7,7 +8,11 @@ import {
    LOGIN_SUCCESS,
    LOGIN_FAIL,
    LOAD_USER_SUCCESS,
-   LOAD_USER_FAIL
+   LOAD_USER_FAIL,
+   REFRESH_TOKEN_FAIL,
+   REFRESH_TOKEN_SUCCESS,
+   VERIFY_TOKEN_FAIL,
+   VERIFY_TOKEN_SUCCESS
 
    } from "../actions/auth/types";
 
@@ -18,7 +23,7 @@ type Action={
 }
 
 type State={
-    user: any| null;
+    user: IUser| null;
     isAutenticated:boolean;
 }
 
@@ -66,6 +71,26 @@ export default function authReducer(state:State = initialState,action:Action={ty
        return {
          ...state,
          user: null,
+       };
+     case REFRESH_TOKEN_SUCCESS:
+       return {
+         ...state,
+       };
+     case REFRESH_TOKEN_FAIL:
+       return {
+         ...state,
+         user: null,
+         isAutenticated: false,
+       };
+     case VERIFY_TOKEN_SUCCESS:
+       return {
+         ...state,
+       };
+     case VERIFY_TOKEN_FAIL:
+       return {
+         ...state,
+         user: null,
+         isAutenticated: false,
        };
 
      default:

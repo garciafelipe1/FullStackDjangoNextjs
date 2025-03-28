@@ -12,7 +12,7 @@ import { ThunkDispatch } from 'redux-thunk';
 
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 import Link from 'next/link';
-import { login } from '@/redux/actions/auth/actions';
+import { login, refresh_access_token, verify_access_token } from '@/redux/actions/auth/actions';
 import { ILoginProps } from '@/redux/actions/auth/interfaces';
 
 export default function Page() {
@@ -41,6 +41,30 @@ export default function Page() {
     }
   };
 
+
+  const handleRefreshToken = async () => {
+    try {
+      setLoading(true);
+      await dispatch(refresh_access_token());
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+    
+  }
+  const handleVerifyToken = async () => {
+    try {
+      setLoading(true);
+      await dispatch(verify_access_token());
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+    
+  }
+
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-32 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -63,6 +87,12 @@ export default function Page() {
             {loading ? <LoadingMoon /> : 'login'}
           </Botton>
         </form>
+        {/* <Botton disabled={loading} hoverEffect={!loading} onClick={handleRefreshToken}>
+          test buttom
+        </Botton> */}
+        <Botton disabled={loading} hoverEffect={!loading} onClick={handleVerifyToken}>
+          verify token
+        </Botton>
 
         <p className="mt-10 text-center text-sm/6 text-gray-500">
           Do you not have an account? {''}
@@ -72,7 +102,10 @@ export default function Page() {
         </p>
         <p className="mt-2 text-center text-sm/6 text-gray-500">
           forgot your password? {''}
-          <Link href="/forgot-password-confirm" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <Link
+            href="/forgot-password-confirm"
+            className="font-semibold text-indigo-600 hover:text-indigo-500"
+          >
             forgot password
           </Link>
         </p>

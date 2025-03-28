@@ -8,7 +8,9 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAIL,
   LOAD_USER_SUCCESS,
-  LOAD_USER_FAIL
+  LOAD_USER_FAIL,
+  VERIFY_TOKEN_FAIL,
+  VERIFY_TOKEN_SUCCESS,
 } from './types';
 import type {
   IRegisterProps,
@@ -20,7 +22,6 @@ import type {
 } from './interfaces';
 import { ThunkDispatch } from 'redux-thunk';
 import { RootState } from '@/redux/reducers';
-
 
 export const register = (props: IRegisterProps) => async (dispatch: Dispatch) => {
   try {
@@ -202,8 +203,6 @@ export const loadUser = () => async (dispatch: Dispatch) => {
   }
 };
 
-
-
 export const login =
   (props: ILoginProps) => async (dispatch: ThunkDispatch<RootState, void, UnknownAction>) => {
     try {
@@ -226,7 +225,7 @@ export const login =
           type: LOGIN_SUCCESS,
         });
         await dispatch(loadUser());
-        
+
         ToastSuccess('Login successfull!');
       } else {
         dispatch({
@@ -240,3 +239,34 @@ export const login =
       });
     }
   };
+
+export const refresh_access_token = () => async (dispatch: Dispatch) => {
+  try {
+    const res = await fetch('/api/auth/refresh');
+    if (res.status === 200) {
+      const data = await res.json();
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: data,
+      });
+    }
+  } catch (err) {}
+};
+export const verify_access_token = () => async (dispatch: Dispatch) => {
+  try {
+    const res = await fetch('/api/auth/verify');
+    if (res.status === 200) {
+      dispatch({
+        type: VERIFY_TOKEN_SUCCESS,
+      });  
+    } else {
+      dispatch({
+        type: VERIFY_TOKEN_FAIL,
+      });
+    }
+  } catch (err) {
+    dispatch({
+      type: VERIFY_TOKEN_FAIL,
+    });
+  }
+};
