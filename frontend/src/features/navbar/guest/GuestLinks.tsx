@@ -1,5 +1,10 @@
 import NavbarLink from "../desktop/NavbarLink";
 
 export default function GuestLinks() {
-  return <NavbarLink href="/register">Register</NavbarLink>;
+  return (
+    <div className="space-x-2">
+      <NavbarLink href="/login">Login</NavbarLink>
+      <NavbarLink href="/register">Register</NavbarLink>
+    </div>
+  );
 }

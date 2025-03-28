@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 
 import { ThemeProvider } from 'next-themes';
 import wrapper from '@/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 
 
@@ -25,11 +26,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <Provider store={store}>
-      <ThemeProvider enableSystem attribute="class">
-        {getLayout(<Component {...props} />)}
-        <ToastContainer className="bottom-0" position='bottom-right' />
-      </ThemeProvider>
+      <PersistGate loading={null} persistor={(store as any).persistor}>
+        <ThemeProvider enableSystem attribute="class">
+          {getLayout(<Component {...props} />)}
+          <ToastContainer className="bottom-0" position="bottom-right" />
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
-
   );
 }

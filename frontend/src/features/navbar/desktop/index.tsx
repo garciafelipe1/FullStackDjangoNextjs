@@ -5,8 +5,12 @@ import Container from "./Container";
 import Header from "./Header";
 import NavbarLink from "./NavbarLink";
 import RightMenuContainer from "./RightMenuContainer";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/reducers";
 
 export default function DesktopNavbar() {
+    
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAutenticated);
     
     return (
       <Container>
@@ -29,10 +33,7 @@ export default function DesktopNavbar() {
           <div />
 
           {/* right side */}
-          <RightMenuContainer>
-            <AuthLinks />
-            <GuestLinks />
-          </RightMenuContainer>
+          <RightMenuContainer>{isAuthenticated ?<AuthLinks /> :<GuestLinks />}</RightMenuContainer>
         </Header>
       </Container>
     );
