@@ -1,13 +1,26 @@
-import { Dispatch } from 'redux';
+import { Dispatch, UnknownAction } from 'redux';
 import { ToastSuccess, ToastError } from '@/components/toast/toast';
-import { SIGNUP_FAIL, SIGNUP_SUCCESS, ACTIVATION_SUCCESS, ACTIVATION_FAIL } from './types';
+import {
+  SIGNUP_FAIL,
+  SIGNUP_SUCCESS,
+  ACTIVATION_SUCCESS,
+  ACTIVATION_FAIL,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  LOAD_USER_SUCCESS,
+  LOAD_USER_FAIL
+} from './types';
 import type {
   IRegisterProps,
   IActivationsProps,
   IResendActivationProps,
   IForgotPasswordProps,
   IForgotPasswordConfirmProps,
+  ILoginProps,
 } from './interfaces';
+import { ThunkDispatch } from 'redux-thunk';
+import { RootState } from '@/redux/reducers';
+
 
 export const register = (props: IRegisterProps) => async (dispatch: Dispatch) => {
   try {
@@ -88,7 +101,7 @@ export const activate = (props: IActivationsProps) => async (dispatch: Dispatch)
   }
 };
 
-export const resend_activation = (props: IResendActivationProps) => async (dispatch: Dispatch) => {
+export const resend_activation = (props: IResendActivationProps) => async () => {
   try {
     const body = JSON.stringify({
       email: props.email,
@@ -110,7 +123,7 @@ export const resend_activation = (props: IResendActivationProps) => async (dispa
     }
   } catch (err) {}
 };
-export const forgot_password = (props: IForgotPasswordProps) => async (dispatch: Dispatch) => {
+export const forgot_password = (props: IForgotPasswordProps) => async () => {
   try {
     const body = JSON.stringify({
       email: props.email,
@@ -158,5 +171,72 @@ export const forgot_password_confirm =
       }
     } catch (err) {
       ToastError('Unexpected error');
+    }
+  };
+
+export const loadUser = () => async (dispatch: Dispatch) => {
+  try {
+    const res = await fetch('/api/auth/user', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    const data = await res.json();
+    if (res.status === 200) {
+      dispatch({
+        type: LOAD_USER_SUCCESS,
+        payload: data,
+      });
+    } else {
+      dispatch({
+        type: LOAD_USER_FAIL,
+      });
+      ToastError('Error loading user information.');
+    }
+  } catch (err) {
+    dispatch({
+      type: LOAD_USER_FAIL,
+    });
+  }
+};
+
+
+
+export const login =
+  (props: ILoginProps) => async (dispatch: ThunkDispatch<RootState, void, UnknownAction>) => {
+    try {
+      const body = JSON.stringify({
+        email: props.email,
+        password: props.password,
+      });
+
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body,
+      });
+
+      if (res.status === 200) {
+        dispatch({
+          type: LOGIN_SUCCESS,
+        });
+        await dispatch(loadUser());
+        
+        ToastSuccess('Login successfull!');
+      } else {
+        dispatch({
+          type: LOGIN_FAIL,
+        });
+        ToastError('Login failed please verify your email and password');
+      }
+    } catch (err) {
+      dispatch({
+        type: LOGIN_FAIL,
+      });
     }
   };

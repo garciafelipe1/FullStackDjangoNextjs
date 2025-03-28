@@ -1,5 +1,15 @@
 
-import { SIGNUP_SUCCESS,SIGNUP_FAIL, ACTIVATION_SUCCESS, ACTIVATION_FAIL } from "../actions/auth/types";
+import { 
+   SIGNUP_SUCCESS,
+   SIGNUP_FAIL,
+   ACTIVATION_SUCCESS,
+   ACTIVATION_FAIL,
+   LOGIN_SUCCESS,
+   LOGIN_FAIL,
+   LOAD_USER_SUCCESS,
+   LOAD_USER_FAIL
+
+   } from "../actions/auth/types";
 
 type Action={
     type:string,
@@ -19,7 +29,7 @@ const initialState={
 }
 
 export default function authReducer(state:State = initialState,action:Action={type:''}) {
-   const {type,}=action;
+   const {type,payload}=action;
    switch (type) {
      case SIGNUP_SUCCESS:
        return {
@@ -37,6 +47,27 @@ export default function authReducer(state:State = initialState,action:Action={ty
        return {
          ...state,
        };
+     case LOGIN_SUCCESS:
+       return {
+         ...state,
+         isAutenticated: true,
+       };
+     case LOGIN_FAIL:
+       return {
+         ...state,
+         isAutenticated: false,
+       };
+     case LOAD_USER_SUCCESS:
+       return {
+         ...state,
+         user: payload,
+       };
+     case LOAD_USER_FAIL:
+       return {
+         ...state,
+         user: null,
+       };
+
      default:
        return state;
    }

@@ -24,3 +24,8 @@ export interface IForgotPasswordConfirmProps {
   uid: string | null;
   token: string | null;
 }
+
+export interface ILoginProps {
+  email: string;
+  password: string;
+}

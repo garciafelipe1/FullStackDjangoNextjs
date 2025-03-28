@@ -12,6 +12,8 @@ import { ThunkDispatch } from 'redux-thunk';
 
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 import Link from 'next/link';
+import { login } from '@/redux/actions/auth/actions';
+import { ILoginProps } from '@/redux/actions/auth/interfaces';
 
 export default function Page() {
   const [email, setEmail] = useState<string>('');
@@ -23,13 +25,15 @@ export default function Page() {
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    
-
-    
+  
+    const loginData: ILoginProps = {
+      email,
+      password
+    }
+          
     try {
       setLoading(true);
-      // await dispatch(register(registerData));
+      await dispatch(login(loginData));
     } catch (err) {
       console.log(err);
     } finally {
