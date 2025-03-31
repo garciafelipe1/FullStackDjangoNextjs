@@ -1,4 +1,3 @@
-import parseCookies from '@/utils/cookies/parseCookies';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type Data = {
@@ -7,32 +6,24 @@ type Data = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-  if (req.method !== 'GET') {
+  if (req.method !== 'POST') {
     return res.status(405).json({
       error: `Method ${req.method} not allowed`,
     });
   }
 
-  const cookies = parseCookies(req.headers.cookie || '');
-  const accessToken = cookies.access;
-  console.log('accessToken', accessToken);
-  if (accessToken === '') {
-    return res.status(401).json({
-      error: 'User unauthorized to make this request',
-    });
-  }
-
   try {
-    const apiRes = await fetch(`${process.env.API_URL}/auth/users/me/`, {
-      method: 'GET',
+    const apiRes = await fetch(`${process.env.API_URL}/api/authentication/send_otp_login/`, {
+      method: 'POST',
       headers: {
         Accept: 'application/json',
-        Authorization: `JWT ${accessToken}`,
+        'Content-Type': 'application/json',
+        
       },
+      body: JSON.stringify(req.body),
     });
 
     const data = await apiRes.json();
-
     return res.status(apiRes.status).json(data);
   } catch (err) {
     return res.status(500).json({

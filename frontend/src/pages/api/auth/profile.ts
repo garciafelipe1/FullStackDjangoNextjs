@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
   const cookies = parseCookies(req.headers.cookie || '');
   const accessToken = cookies.access;
-  console.log('accessToken', accessToken);
+
   if (accessToken === '') {
     return res.status(401).json({
       error: 'User unauthorized to make this request',
@@ -23,11 +23,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const apiRes = await fetch(`${process.env.API_URL}/auth/users/me/`, {
+    const apiRes = await fetch(`${process.env.API_URL}/api/profile/my_profile/`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
         Authorization: `JWT ${accessToken}`,
+        
       },
     });
 

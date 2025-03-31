@@ -10,7 +10,7 @@ import { RootState } from "@/redux/reducers";
 
 export default function DesktopNavbar() {
     
-    const isAuthenticated = useSelector((state: RootState) => state.auth.isAutenticated);
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
     
     return (
       <Container>

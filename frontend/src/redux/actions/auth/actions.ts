@@ -1,3 +1,4 @@
+
 import { Dispatch, UnknownAction } from 'redux';
 import { ToastSuccess, ToastError } from '@/components/toast/toast';
 import {
@@ -11,6 +12,9 @@ import {
   LOAD_USER_FAIL,
   VERIFY_TOKEN_FAIL,
   VERIFY_TOKEN_SUCCESS,
+  LOAD_PROFILE_SUCCESS,
+  LOAD_PROFILE_FAIL,
+  LOGOUT,
 } from './types';
 import type {
   IRegisterProps,
@@ -203,6 +207,29 @@ export const loadUser = () => async (dispatch: Dispatch) => {
   }
 };
 
+export const loadProfile = () => async (dispatch: Dispatch) => {
+  try {
+    const res = await fetch('/api/auth/profile');
+
+    const data = await res.json();
+    if (res.status === 200) {
+      dispatch({
+        type: LOAD_PROFILE_SUCCESS,
+        payload: data.results,
+      });
+    } else {
+      dispatch({
+        type: LOAD_PROFILE_FAIL,
+      });
+      ToastError('Error loading user profile.');
+    }
+  } catch (err) {
+    dispatch({
+      type: LOAD_PROFILE_FAIL,
+    });
+  }
+};
+
 export const login =
   (props: ILoginProps) => async (dispatch: ThunkDispatch<RootState, void, UnknownAction>) => {
     try {
@@ -225,8 +252,9 @@ export const login =
           type: LOGIN_SUCCESS,
         });
         await dispatch(loadUser());
+        await dispatch(loadProfile());
 
-        ToastSuccess('Login successfull!');
+        console.log('Login successfull.');
       } else {
         dispatch({
           type: LOGIN_FAIL,
@@ -258,7 +286,7 @@ export const verify_access_token = () => async (dispatch: Dispatch) => {
     if (res.status === 200) {
       dispatch({
         type: VERIFY_TOKEN_SUCCESS,
-      });  
+      });
     } else {
       dispatch({
         type: VERIFY_TOKEN_FAIL,
@@ -270,3 +298,33 @@ export const verify_access_token = () => async (dispatch: Dispatch) => {
     });
   }
 };
+
+export const setLoginSuccess = () => async (dispatch: Dispatch) => {
+  try {
+    dispatch({
+      type: LOGIN_SUCCESS,
+    });
+    
+  } catch (err) {
+    dispatch({
+      type: LOGIN_FAIL,
+    });
+    
+  }
+};
+
+
+export const logout= () => async (dispatch: Dispatch) => {
+  try {
+    const res=await fetch('/api/auth/logout');
+    if(res.status===200){
+      dispatch({
+        type: LOGOUT,
+      });
+      
+    }
+  } catch (err) {
+    ToastError('Unexpected error');
+    };
+  
+}
