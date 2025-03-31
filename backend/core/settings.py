@@ -218,7 +218,7 @@ DJOSER = {
     
     
     
-    'PASSWORD_RESET_CONFIRM_URL': 'email/password_reset_confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'forgot-password-confirm/?uid={uid}&token={token}',
     'USERNAME_RESET_CONFIRM_URL': 'email/username_reset_confirm/{uid}/{token}',
     'ACTIVATION_URL': 'activate/?uid={uid}&token={token}',
     
