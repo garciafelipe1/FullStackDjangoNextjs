@@ -13,7 +13,7 @@ type ButtonProps = {
   disabled?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export default function Botton({
+export default function Button({
   children,
   textColor = 'text-white dark:text-white',
   type = 'button',
@@ -47,7 +47,7 @@ export default function Botton({
   );
 }
 
-Botton.defaultProps = {
+Button.defaultProps = {
   textColor: 'text-white dark:text-white',
   bgColor: 'bg-indigo-700 hover:bg-indigo-700',
   padding: 'py-3.5 px-4',

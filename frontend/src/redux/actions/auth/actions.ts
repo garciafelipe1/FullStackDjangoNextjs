@@ -209,7 +209,7 @@ export const loadUser = () => async (dispatch: Dispatch) => {
 
 export const loadProfile = () => async (dispatch: Dispatch) => {
   try {
-    const res = await fetch('/api/auth/profile');
+    const res = await fetch('/api/auth/profile/');
 
     const data = await res.json();
     if (res.status === 200) {
