@@ -13,7 +13,7 @@ export interface TipTapEditorProps {
 function TiptapEditor({ data, setData, maxTextLength }: TipTapEditorProps) {
   const editor = useEditor({
     extensions: [StarterKit, Underline],
-    content: data, // Inicialización inicial
+    content: localStorage.getItem('tiptap-content') || data || '',
     immediatelyRender: false,
     editorProps: {
       attributes: {
@@ -30,18 +30,15 @@ function TiptapEditor({ data, setData, maxTextLength }: TipTapEditorProps) {
         setData(currentEditor.getHTML());
       } else {
         setData(updatedContent);
+        localStorage.setItem('tiptap-content', updatedContent); // Guardar en localStorage
       }
     },
   });
 
-  // Efecto para sincronizar `data` con el editor, asegurando también que los strings vacíos se manejen correctamente
   useEffect(() => {
-    if (editor && editor.getHTML() !== data) {
-      if (data === '') {
-        editor.commands.clearContent();
-      } else {
-        editor.commands.setContent(data);
-      }
+    if (editor && data && localStorage.getItem('tiptap-content') !== data) {
+      editor.commands.setContent(data);
+      localStorage.removeItem('tiptap-content'); // Limpiar localStorage si los datos externos cambian
     }
   }, [data, editor]);
 

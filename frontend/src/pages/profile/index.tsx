@@ -16,17 +16,28 @@ import LoadingMoon from '@/components/loaders/LoadingMoon';
 import EditDate from '@/components/forms/EditDate';
 import EditURL from '@/components/forms/EditURLS';
 import validator from 'validator';
+import EditRichText from '@/components/forms/EditRichText';
+
+/**
+ * Functional component representing the user profile edit page.
+ * It allows users to view and modify their personal and profile information.
+ */
 export default function Page() {
+  // Selectors to access user and profile data from the Redux store
   const user = useSelector((state: RootState) => state.auth.user);
   const profile = useSelector((state: RootState) => state.auth.profile);
 
-  const [hasChanges, setHasChanges] = useState<boolean>(false);
-  const [hasChangesProfile, setHasChangesProfile] = useState<boolean>(false);
+  // State variables to track changes and manage form input
+  const [hasChanges, setHasChanges] = useState<boolean>(false); // Tracks changes in user information (username, first/last name)
+  const [hasChangesProfile, setHasChangesProfile] = useState<boolean>(false); // Tracks changes in profile information (biography, social links, etc.)
 
+  // State variables to hold the current values of user information
   const [username, setUsername] = useState<string>('');
   const [Firstname, setFirstName] = useState<string>('');
   const [Lastname, setLastName] = useState<string>('');
+  const [biography, setBiography] = useState<string>('');
 
+  // State variables to hold the current values of profile information
   const [birthday, setBirthday] = useState<string>('');
   const [website, setWebsite] = useState<string>('');
   const [twitter, setTwitter] = useState<string>('');
@@ -37,7 +48,7 @@ export default function Page() {
   const [tiktok, setTiktok] = useState<string>('');
   const [snapchat, setSnapchat] = useState<string>('');
 
-  //rellenar el estado con estados
+  // useEffect hook to populate the state variables with data from the Redux store when it loads or updates
   useEffect(() => {
     if (user) {
       setUsername(user?.username);
@@ -58,9 +69,21 @@ export default function Page() {
     }
   }, [user, profile]);
 
-  const isValidDate=(data: string)=>{!Number.isNaN(new Date(data).getTime())}
+  // Helper function to check if a given string is a valid date
+  const isValidDate = (data: string) => !Number.isNaN(new Date(data).getTime());
+
+  // Helper function to check if a given string is a valid URL
   const isValidUrl = (url: string) => validator.isURL(url, { require_protocol: false });
+
+  // Helper function to check if a rich text string is empty after removing HTML tags and trimming whitespace
+  const isEmpty = (str: string) => {
+    const CleanedContent = str.replace(/<[^>]+>/g, '').trim();
+    return CleanedContent === '';
+  };
+
+  // useEffect hook to detect changes in the input fields and update the hasChanges and hasChangesProfile state variables
   useEffect(() => {
+    // Check for changes in user information
     if (
       username !== user?.username ||
       Firstname !== user?.first_name ||
@@ -71,7 +94,9 @@ export default function Page() {
       setHasChanges(false);
     }
 
+    // Check for changes in profile information
     if (
+      (biography !== profile?.biography && !isEmpty(biography)) ||
       (birthday !== profile?.birthday && isValidDate(birthday)) ||
       (website !== profile?.website && isValidUrl(website)) ||
       (twitter !== profile?.twitter && isValidUrl(twitter)) ||
@@ -89,6 +114,7 @@ export default function Page() {
   }, [
     user,
     username,
+    biography,
     Firstname,
     Lastname,
     birthday,
@@ -102,8 +128,14 @@ export default function Page() {
     snapchat,
   ]);
 
+  // Get the dispatch function from Redux to dispatch actions
   const dispatch: ThunkDispatch<any, any, UnknownAction> = useDispatch();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false); // State to manage the loading state of the save button
+
+  /**
+   * Asynchronously handles saving the user's basic information (username, first/last name).
+   * It sends a PUT request to the '/user/update' endpoint with the updated data.
+   */
   const handleSaveUserData = async () => {
     const updatedData: Record<string, string> = {};
     if (username !== user?.username) {
@@ -116,6 +148,7 @@ export default function Page() {
       updatedData.last_name = Lastname;
     }
 
+    // If no changes were made, display a warning toast and return
     if (Object.keys(updatedData).length === 0) {
       ToastWarning('No changes made to user data.');
       return;
@@ -132,7 +165,7 @@ export default function Page() {
 
       if (response.ok) {
         ToastSuccess('User data updated successfully.');
-        await dispatch(loadUser());
+        await dispatch(loadUser()); // Reload user data from the server to update the Redux store
       } else {
         ToastError('Failed to update user data.');
       }
@@ -140,8 +173,16 @@ export default function Page() {
       ToastError('An error occurred while updating user data.');
     }
   };
+
+  /**
+   * Asynchronously handles saving the user's profile information (biography, social links, etc.).
+   * It sends a PUT request to the 'api/profile/update' endpoint with the updated data.
+   */
   const handleProfileData = async () => {
     const updatedData: Record<string, string> = {};
+    if (biography !== profile?.biography) {
+      updatedData.biography = biography;
+    }
     if (birthday !== profile?.birthday) {
       updatedData.birthday = birthday;
     }
@@ -170,13 +211,14 @@ export default function Page() {
       updatedData.snapchat = snapchat;
     }
 
+    // If no changes were made to the profile, display a warning toast and return
     if (Object.keys(updatedData).length === 0) {
       ToastWarning('No changes made to profile data.');
       return;
     }
 
     try {
-      const response = await fetch('/profile/update', {
+      const response = await fetch('api/profile/update', {
         // Assuming a different endpoint for profile updates
         method: 'PUT',
         headers: {
@@ -187,7 +229,7 @@ export default function Page() {
 
       if (response.ok) {
         ToastSuccess('Profile data updated successfully.');
-        await dispatch(loadProfile());
+        await dispatch(loadProfile()); // Reload profile data from the server to update the Redux store
       } else {
         ToastError('Failed to update Profile data.');
       }
@@ -195,13 +237,19 @@ export default function Page() {
       ToastError('An error occurred while updating profile data.');
     }
   };
+
+  /**
+   * Asynchronously handles saving both user and profile data if any changes have been made.
+   * It calls handleSaveUserData and handleProfileData conditionally based on the hasChanges and hasChangesProfile state.
+   */
   const handleSaveData = async () => {
+    // If no changes were made to either user or profile data, display a warning toast and return
     if (!hasChanges && !hasChangesProfile) {
       ToastWarning('No changes made.');
       return;
     }
     try {
-      setLoading(true);
+      setLoading(true); // Set loading state to true to disable the button and show a loader
 
       if (hasChanges) {
         await handleSaveUserData();
@@ -214,7 +262,7 @@ export default function Page() {
     } catch (error) {
       ToastError('An error occurred while saving data.');
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading state back to false regardless of success or failure
     }
   };
 
@@ -229,6 +277,7 @@ export default function Page() {
                 This information will be in this profile and will be visible to the public.
               </p>
             </div>
+
             <div className="ml-4 mt-4 shrink-0">
               <Button
                 onClick={handleSaveData}
@@ -268,6 +317,10 @@ export default function Page() {
         <p className="mt-1 text-sm/6 text-gray-500">
           Your public profile information to let the world know more about you.
         </p>
+
+        <li className="py-6">
+          <EditRichText title="Biography" data={biography} setData={setBiography} />
+        </li>
 
         <ul className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm/6">
           <li className="py-6 sm:flex">
@@ -330,7 +383,6 @@ export default function Page() {
     </Container>
   );
 }
-
 Page.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>;
 };
