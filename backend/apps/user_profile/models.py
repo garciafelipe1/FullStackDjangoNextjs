@@ -17,15 +17,15 @@ class UserProfile(models.Model):
     biography =RichTextField()
     birthday= models.DateField(null=True, blank=True)
     
-    website= models.URLField(blank=True,null=True)
-    facebook= models.URLField(blank=True,null=True)
-    twitter= models.URLField(blank=True,null=True)
-    instagram= models.URLField(blank=True,null=True)
-    github= models.URLField(blank=True,null=True)
-    linkedin= models.URLField(blank=True,null=True)
-    youtube= models.URLField(blank=True,null=True)
-    tiktok= models.URLField(blank=True,null=True)
-    snapchat= models.URLField(blank=True,null=True)
+    website= models.URLField(blank=True,default='')
+    facebook= models.URLField(blank=True,default='')
+    twitter= models.URLField(blank=True,default='')
+    instagram= models.URLField(blank=True,default='')
+    github= models.URLField(blank=True,default='')
+    linkedin= models.URLField(blank=True,default='')
+    youtube= models.URLField(blank=True,default='')
+    tiktok= models.URLField(blank=True,default='')
+    snapchat= models.URLField(blank=True,default='')
 
 
     

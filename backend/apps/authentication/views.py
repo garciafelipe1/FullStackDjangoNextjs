@@ -15,7 +15,31 @@ from rest_framework import status
 from django.core.mail import send_mail
 from django.contrib.sites.models import Site
 from rest_framework.permissions import AllowAny
+from utils.string_utils import sanitize_string,sanitize_username
 
+
+User = get_user_model()
+class UpdateUserInformationViews(StandardAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+
+        username = request.data.get("username", None)
+        first_name = request.data.get("first_name", None)
+        last_name = request.data.get("last_name", None)
+
+        if username:
+            user.username = sanitize_username(username)
+        if first_name:
+            user.first_name = sanitize_string(first_name)
+        if last_name:
+            user.last_name = sanitize_string(last_name)
+
+        user.save()
+
+        return self.response ("User information updated successfully")
+    
 class GenerateQRCodeView(StandardAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
