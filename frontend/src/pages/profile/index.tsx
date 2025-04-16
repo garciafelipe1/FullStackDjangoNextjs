@@ -17,11 +17,11 @@ import EditDate from '@/components/forms/EditDate';
 import EditURL from '@/components/forms/EditURLS';
 import validator from 'validator';
 import EditRichText from '@/components/forms/EditRichText';
+import EditImage from '@/components/forms/EditImage';
+import useProfilePicture from '@/hooks/UseProfilePicture';
 
-/**
- * Functional component representing the user profile edit page.
- * It allows users to view and modify their personal and profile information.
- */
+
+
 export default function Page() {
   // Selectors to access user and profile data from the Redux store
   const user = useSelector((state: RootState) => state.auth.user);
@@ -29,13 +29,17 @@ export default function Page() {
 
   // State variables to track changes and manage form input
   const [hasChanges, setHasChanges] = useState<boolean>(false); // Tracks changes in user information (username, first/last name)
-  const [hasChangesProfile, setHasChangesProfile] = useState<boolean>(false); // Tracks changes in profile information (biography, social links, etc.)
+  const [hasChangesProfile, setHasChangesProfile] = useState<boolean>(false);
+  const [hasChangesProfilePicture, setHasChangesProfilePicture] = useState<boolean>(false);
+   // Tracks changes in profile information (biography, social links, etc.)
 
   // State variables to hold the current values of user information
   const [username, setUsername] = useState<string>('');
   const [Firstname, setFirstName] = useState<string>('');
   const [Lastname, setLastName] = useState<string>('');
   const [biography, setBiography] = useState<string>('');
+
+
 
   // State variables to hold the current values of profile information
   const [birthday, setBirthday] = useState<string>('');
@@ -48,6 +52,16 @@ export default function Page() {
   const [tiktok, setTiktok] = useState<string>('');
   const [snapchat, setSnapchat] = useState<string>('');
 
+  
+
+
+  const { profilePicture, setProfilePicture, percentage, setPercentage, loading:loadingProfilePicture} = useProfilePicture();
+  const onLoadProfilePicture = (newImage: any) =>{
+    if(newImage ===! profilePicture){
+      setProfilePicture(newImage);
+      setHasChangesProfilePicture(true);
+    }
+  }
   // useEffect hook to populate the state variables with data from the Redux store when it loads or updates
   useEffect(() => {
     if (user) {
@@ -174,10 +188,12 @@ export default function Page() {
     }
   };
 
-  /**
-   * Asynchronously handles saving the user's profile information (biography, social links, etc.).
-   * It sends a PUT request to the 'api/profile/update' endpoint with the updated data.
-   */
+  const handleSaveProfilePicture=async()=>{
+    
+  }
+
+
+
   const handleProfileData = async () => {
     const updatedData: Record<string, string> = {};
     if (biography !== profile?.biography) {
@@ -237,6 +253,7 @@ export default function Page() {
       ToastError('An error occurred while updating profile data.');
     }
   };
+  console.log(profilePicture)
 
   /**
    * Asynchronously handles saving both user and profile data if any changes have been made.
@@ -244,7 +261,7 @@ export default function Page() {
    */
   const handleSaveData = async () => {
     // If no changes were made to either user or profile data, display a warning toast and return
-    if (!hasChanges && !hasChangesProfile) {
+    if (!hasChanges && !hasChangesProfile && !hasChangesProfilePicture) {
       ToastWarning('No changes made.');
       return;
     }
@@ -281,7 +298,7 @@ export default function Page() {
             <div className="ml-4 mt-4 shrink-0">
               <Button
                 onClick={handleSaveData}
-                disabled={loading || (!hasChanges && !hasChangesProfile)}
+                disabled={loading || (!hasChanges && !hasChangesProfile && !hasChangesProfile)}
                 hoverEffect
               >
                 {loading ? <LoadingMoon /> : 'save changes'}
@@ -290,6 +307,7 @@ export default function Page() {
           </div>
         </div>
 
+      
         <dl className="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-200 text-sm/6">
           <div className="pt-6 sm:flex">
             <dt className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Username</dt>
@@ -318,11 +336,20 @@ export default function Page() {
           Your public profile information to let the world know more about you.
         </p>
 
-        <li className="py-6">
-          <EditRichText title="Biography" data={biography} setData={setBiography} />
-        </li>
-
         <ul className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm/6">
+          <li className="py-6">
+            <EditImage
+              onLoad={onLoadProfilePicture}
+              data={profilePicture}
+              setData={setProfilePicture}
+            />
+          </li>
+          <li className="py-6 sm:flex">
+            <h4 className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Biography</h4>
+            <div className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
+              <EditRichText data={biography} setData={setBiography} />
+            </div>
+          </li>
           <li className="py-6 sm:flex">
             <h4 className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Birthday</h4>
             <div className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">

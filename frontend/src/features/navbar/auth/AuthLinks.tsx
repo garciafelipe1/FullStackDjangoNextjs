@@ -20,13 +20,14 @@ export default function AuthLinks() {
     dispatch(logout());
     router.push('/');
   };
+ 
   return (
     <div>
       <Menu as="div" className="relative inline-block text-left">
         <MenuButton>
           <Image
             className="h-10 w-auto"
-            src={userin}
+            src={"http://127.0.0.1:8004" + profile?.profile_picture} // Añade un valor por defecto
             width={512}
             height={512}
             alt="profile-picture"
