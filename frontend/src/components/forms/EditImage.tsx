@@ -136,8 +136,8 @@ export default function EditImage({
               width={512}
               height={512}
               src={srcUrl}
-              alt=""
-              className="h-48 w-auto object-cover"
+              alt={data?.title || ''}
+              className={`h-48 w-auto object-cover ${variant === 'profile' ? 'rounded-full object-center' : ''}`}
             />
           )}
         </div>
