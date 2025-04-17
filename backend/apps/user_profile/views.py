@@ -96,20 +96,28 @@ class UpdateUserProfileView(StandardAPIView):
 
 
 
-class UploadProfilePictureView(StandardAPIView):
+class UploadProfilePictureView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
+        # Imprimir request.FILES
+        print("request.FILES:", request.FILES)
+        # Imprimir request.POST
+        print("request.POST:", request.POST)
+
         user = request.user
-        profile = UserProfile.objects.get(user=user)
+        try:
+            profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "UserProfile not found."}, status=404)
 
         uploaded_file = request.FILES.get("file")
         if not uploaded_file:
-            return self.response("No file uploaded.", status=400)
+            return Response({"results": "No file uploaded."}, status=400)
 
         profile.profile_picture = uploaded_file  # Django se encarga de guardarlo
         profile.save()
 
-        return self.response("Profile picture has been updated.")
+        return Response({"message": "Profile picture has been updated."}, status=200)
