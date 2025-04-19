@@ -24,17 +24,15 @@ import { uploadAndGetLocalURL } from '@/utils/local/FetchPresignedurl';
 
 
 export default function Page() {
-  // Selectors to access user and profile data from the Redux store
+
   const user = useSelector((state: RootState) => state.auth.user);
   const profile = useSelector((state: RootState) => state.auth.profile);
 
-  // State variables to track changes and manage form input
-  const [hasChanges, setHasChanges] = useState<boolean>(false); // Tracks changes in user information (username, first/last name)
+ 
+  const [hasChanges, setHasChanges] = useState<boolean>(false); 
   const [hasChangesProfile, setHasChangesProfile] = useState<boolean>(false);
   const [hasChangesProfilePicture, setHasChangesProfilePicture] = useState<boolean>(false);
-  // Tracks changes in profile information (biography, social links, etc.)
 
-  // State variables to hold the current values of user information
   const [username, setUsername] = useState<string>('');
   const [Firstname, setFirstName] = useState<string>('');
   const [Lastname, setLastName] = useState<string>('');
@@ -43,7 +41,7 @@ export default function Page() {
   const [localProfilePictureURL, setLocalProfilePictureURL] = useState<string | null>(null);
   const [uploadingProfilePicture, setUploadingProfilePicture] = useState<boolean>(false);
 
-  // State variables to hold the current values of profile information
+ 
   const [birthday, setBirthday] = useState<string>('');
   const [website, setWebsite] = useState<string>('');
   const [twitter, setTwitter] = useState<string>('');
@@ -53,26 +51,27 @@ export default function Page() {
   const [youtube, setYoutube] = useState<string>('');
   const [tiktok, setTiktok] = useState<string>('');
   const [snapchat, setSnapchat] = useState<string>('');
+  const [facebook, setFacebook] = useState<string>('');
 
-  // Asegúrate de tener
+
 
   const {
     profilePicture,
     setProfilePicture,
-    percentage,
+    percentage: ProfilePicturePercentaje,
     setPercentage: setPercentageProfilePicture,
     loading: loadingProfilePicture,
   } = useProfilePicture();
-  console.log('Inicialización de profilePicture:', profilePicture); // <-- LOG 2: Inicialización
+  
    const onLoadProfilePicture = (newImage: any) => {
-     // Ejemplo comparando la propiedad 'file'
+     
      if (newImage?.file !== profilePicture?.file) {
        setProfilePicture(newImage);
        setHasChangesProfilePicture(true);
        console.log('Actualización de profilePicture:', newImage);
      }
    };
-  // useEffect hook to populate the state variables with data from the Redux store when it loads or updates
+  
   useEffect(() => {
     if (user) {
       setUsername(user?.username);
@@ -89,6 +88,7 @@ export default function Page() {
       setLinkedin(profile?.linkedin);
       setYoutube(profile?.youtube);
       setTiktok(profile?.tiktok);
+      setFacebook(profile?.facebook);
       setSnapchat(profile?.snapchat);
     }
   }, [user, profile]);
@@ -105,9 +105,9 @@ export default function Page() {
     return CleanedContent === '';
   };
 
-  // useEffect hook to detect changes in the input fields and update the hasChanges and hasChangesProfile state variables
+  
   useEffect(() => {
-    // Check for changes in user information
+    
     if (
       username !== user?.username ||
       Firstname !== user?.first_name ||
@@ -118,7 +118,7 @@ export default function Page() {
       setHasChanges(false);
     }
 
-    // Check for changes in profile information
+    
     if (
       (biography !== profile?.biography && !isEmpty(biography)) ||
       (birthday !== profile?.birthday && isValidDate(birthday)) ||
@@ -129,6 +129,7 @@ export default function Page() {
       (linkedin !== profile?.linkedin && isValidUrl(linkedin)) ||
       (youtube !== profile?.youtube && isValidUrl(youtube)) ||
       (tiktok !== profile?.tiktok && isValidUrl(tiktok)) ||
+      (facebook !== profile?.facebook && isValidUrl(facebook)) ||
       (snapchat !== profile?.snapchat && isValidUrl(snapchat))
     ) {
       setHasChangesProfile(true);
@@ -150,16 +151,14 @@ export default function Page() {
     youtube,
     tiktok,
     snapchat,
+    facebook,
   ]);
 
-  // Get the dispatch function from Redux to dispatch actions
+  
   const dispatch: ThunkDispatch<any, any, UnknownAction> = useDispatch();
-  const [loading, setLoading] = useState<boolean>(false); // State to manage the loading state of the save button
+  const [loading, setLoading] = useState<boolean>(false); 
 
-  /**
-   * Asynchronously handles saving the user's basic information (username, first/last name).
-   * It sends a PUT request to the '/user/update' endpoint with the updated data.
-   */
+  
   const handleSaveUserData = async () => {
     const updatedData: Record<string, string> = {};
     if (username !== user?.username) {
@@ -172,7 +171,7 @@ export default function Page() {
       updatedData.last_name = Lastname;
     }
 
-    // If no changes were made, display a warning toast and return
+    
     if (Object.keys(updatedData).length === 0) {
       ToastWarning('No changes made to user data.');
       return;
@@ -230,6 +229,9 @@ export default function Page() {
     if (snapchat !== profile?.snapchat) {
       updatedData.snapchat = snapchat;
     }
+    if (facebook !== profile?.facebook) {
+      updatedData.facebook=facebook;
+    }
 
     // If no changes were made to the profile, display a warning toast and return
     if (Object.keys(updatedData).length === 0) {
@@ -257,7 +259,7 @@ export default function Page() {
       ToastError('An error occurred while updating profile data.');
     }
   };
-  console.log(profilePicture);
+  
   const handleSaveProfilePicture = async () => {
     if (!profilePicture.file) {
       ToastError('No profile picture selected.');
@@ -386,6 +388,7 @@ export default function Page() {
               onLoad={onLoadProfilePicture}
               data={profilePicture}
               setData={setProfilePicture}
+              percentage={ProfilePicturePercentaje}
             />
           </li>
           <li className="py-6 sm:flex">
@@ -416,7 +419,7 @@ export default function Page() {
           <li className="py-6 sm:flex">
             <h4 className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Facebook</h4>
             <div className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-              <EditURL data={twitter} setData={setTwitter} />
+              <EditURL data={facebook} setData={setFacebook} />
             </div>
           </li>
 
@@ -448,6 +451,12 @@ export default function Page() {
             <h4 className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Snapchat</h4>
             <div className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
               <EditURL data={snapchat} setData={setSnapchat} />
+            </div>
+          </li>
+          <li className="py-6 sm:flex">
+            <h4 className="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">Twitter</h4>
+            <div className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
+              <EditURL data={twitter} setData={setTwitter} />
             </div>
           </li>
         </ul>
