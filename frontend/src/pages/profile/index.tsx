@@ -20,6 +20,7 @@ import EditRichText from '@/components/forms/EditRichText';
 import EditImage from '@/components/forms/EditImage';
 import useProfilePicture from '@/hooks/UseProfilePicture';
 import { uploadAndGetLocalURL } from '@/utils/local/FetchPresignedurl';
+import useBannerPicture from '@/hooks/UseBannerPicture';
 
 
 
@@ -32,6 +33,7 @@ export default function Page() {
   const [hasChanges, setHasChanges] = useState<boolean>(false); 
   const [hasChangesProfile, setHasChangesProfile] = useState<boolean>(false);
   const [hasChangesProfilePicture, setHasChangesProfilePicture] = useState<boolean>(false);
+  const [hasChangesBannerPicture, setHasChangesBannerPicture] = useState<boolean>(false);
 
   const [username, setUsername] = useState<string>('');
   const [Firstname, setFirstName] = useState<string>('');
@@ -62,12 +64,27 @@ export default function Page() {
     setPercentage: setPercentageProfilePicture,
     loading: loadingProfilePicture,
   } = useProfilePicture();
+  const {
+    bannerPicture,
+    setBannerPicture,
+    percentage: BannerPicturePercentage,
+    setPercentage: setBannerPicturePercentage,
+    loading: loadingBannerPicture,
+  } = useBannerPicture();
   
    const onLoadProfilePicture = (newImage: any) => {
      
      if (newImage?.file !== profilePicture?.file) {
        setProfilePicture(newImage);
        setHasChangesProfilePicture(true);
+       console.log('Actualización de profilePicture:', newImage);
+     }
+   };
+   const onLoadBannerPicture = (newImage: any) => {
+     
+     if (newImage?.file !== bannerPicture?.file) {
+       setBannerPicture(newImage);
+       setHasChangesBannerPicture(true);
        console.log('Actualización de profilePicture:', newImage);
      }
    };
@@ -302,7 +319,7 @@ export default function Page() {
 
    const handleSaveData = async () => {
     // If no changes were made to either user or profile data, display a warning toast and return
-    if (!hasChanges && !hasChangesProfile && !hasChangesProfilePicture) {
+    if (!hasChanges && !hasChangesProfile && !hasChangesProfilePicture && !hasChangesBannerPicture) {
       ToastWarning('No changes made.');
       return;
     }
@@ -320,7 +337,7 @@ export default function Page() {
       if (hasChangesProfilePicture) {
         await handleSaveProfilePicture(); // ¡Se llama a la función de guardado de la foto!
       }
-      ToastSuccess('User data saved successfully.');
+      ToastSuccess('Changes saved successfully.');
     } catch (error) {
       ToastError('An error occurred while saving data.');
     } finally {
@@ -344,7 +361,11 @@ export default function Page() {
               <Button
                 onClick={handleSaveData}
                 disabled={
-                  loading || (!hasChanges && !hasChangesProfile && !hasChangesProfilePicture)
+                  loading ||
+                  (!hasChanges &&
+                    !hasChangesProfile &&
+                    !hasChangesProfilePicture &&
+                    !hasChangesBannerPicture)
                 }
                 hoverEffect
               >
@@ -384,11 +405,23 @@ export default function Page() {
 
         <ul className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm/6">
           <li className="py-6">
+            <h2 className="font-semibold">Profile Picture</h2>
             <EditImage
               onLoad={onLoadProfilePicture}
               data={profilePicture}
               setData={setProfilePicture}
               percentage={ProfilePicturePercentaje}
+            />
+          </li>
+          <li className="py-6">
+            <h2 className="font-semibold">Banner Picture</h2>
+            <EditImage
+              onLoad={onLoadBannerPicture}
+              data={bannerPicture}
+              setData={setBannerPicturePercentage}
+              percentage={BannerPicturePercentage}
+              variant="banner"
+              title="Banner Picture"
             />
           </li>
           <li className="py-6 sm:flex">

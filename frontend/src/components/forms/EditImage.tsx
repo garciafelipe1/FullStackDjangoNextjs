@@ -26,7 +26,7 @@ export default function EditImage({
   description = '',
   
 }: ComponentProps) {
-  console.log("data", data);
+  
   const handleDrop = (acceptedFiles: any) => {
     const acceptedFile = acceptedFiles[0];
 
@@ -181,6 +181,7 @@ export default function EditImage({
                 src={srcUrl}
                 alt=""
                 className="h-32 w-auto rounded-full object-cover object-center"
+                
               />
             )}
           </div>
