@@ -13,7 +13,7 @@ from django.http import FileResponse, Http404
 from utils.string_utils import sanitize_string,sanitize_html,sanitize_username,sanitize_url
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
-
+from apps.authentication.serializers import UserPublicSerializer
 
 from django.shortcuts import get_object_or_404
 
@@ -26,6 +26,26 @@ class MyUserProfileView(StandardAPIView):
         user_profile = UserProfile.objects.get(user=user)
         serialized_user_profile = UserProfileSerializer(user_profile).data
         return self.response(serialized_user_profile)
+class DetailUserProfileView(StandardAPIView):
+    def get(self, request):
+        username=request.query_params.get("username",None)
+        if not username:
+            return self.error("a valid username must be provided")
+        try:
+            user=User.objects.get(username=username)
+        except User.DoesNotExist:
+            return self.response("user does not exists",status=status.HTTP_404_NOT_FOUND)
+        
+        serialized_user=UserPublicSerializer(user).data
+
+        
+        user_profile = UserProfile.objects.get(user=user)
+        serialized_user_profile = UserProfileSerializer(user_profile).data
+        
+        return self.response({
+            "user":serialized_user,
+            "profile":serialized_user_profile
+        })
     
 class GetMyProfilePictureView(StandardAPIView):
     permission_classes = [permissions.IsAuthenticated]
