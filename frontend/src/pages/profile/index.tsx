@@ -22,7 +22,27 @@ import useProfilePicture from '@/hooks/UseProfilePicture';
 import { uploadAndGetLocalURL } from '@/utils/local/FetchPresignedurl';
 import useBannerPicture from '@/hooks/UseBannerPicture';
 
+import parseCookies from '@/utils/cookies/parseCookies';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import verifyAccess from '@/utils/api/auth/VerifyAccess';
 
+
+export const getServerSideProps:GetServerSideProps = async (context:GetServerSidePropsContext) => {
+  const {Verified} = await verifyAccess(context);
+
+  if (!Verified) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+  }
+  return {
+    props: { 
+       },
+  };
+}
 
 export default function Page() {
 
@@ -43,6 +63,7 @@ export default function Page() {
   const [localProfilePictureURL, setLocalProfilePictureURL] = useState<string | null>(null);
   const [uploadingProfilePicture, setUploadingProfilePicture] = useState<boolean>(false);
 
+  const [uploadingBannerPicture, setUploadingBannerPicture] = useState<boolean>(false);
  
   const [birthday, setBirthday] = useState<string>('');
   const [website, setWebsite] = useState<string>('');
@@ -317,6 +338,46 @@ export default function Page() {
     }
   };
 
+  const handleSaveBannerPicture = async () => {
+    if (!bannerPicture.file) {
+      ToastError('No profile picture selected.');
+      return;
+    }
+
+    setUploadingBannerPicture(true);
+    setBannerPicturePercentage(30);
+
+    const { file } = bannerPicture;
+    const desiredFileName = `profile_${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file, desiredFileName);
+
+      const response = await fetch('/api/profile/upload_banner_picture/', {
+        method: 'POST',
+        body: formData,
+        // ¡NO establecer el header 'Content-Type' aquí!
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        ToastSuccess('Profile picture updated successfully!');
+        // ...
+      } else {
+        const errorData = await response.json();
+        ToastError(`Failed to update profile picture: ${errorData.message || response.statusText}`);
+        console.error('Backend error updating profile picture:', errorData);
+      }
+    } catch (error) {
+      ToastError('An unexpected error occurred while uploading.');
+      console.error('Frontend error uploading profile picture:', error);
+    } finally {
+      setUploadingBannerPicture(false);
+      setTimeout(() => setBannerPicturePercentage(0), 1000);
+    }
+  };
+
    const handleSaveData = async () => {
     // If no changes were made to either user or profile data, display a warning toast and return
     if (!hasChanges && !hasChangesProfile && !hasChangesProfilePicture && !hasChangesBannerPicture) {
@@ -336,6 +397,9 @@ export default function Page() {
 
       if (hasChangesProfilePicture) {
         await handleSaveProfilePicture(); // ¡Se llama a la función de guardado de la foto!
+      }
+      if (hasChangesBannerPicture) {
+        await handleSaveBannerPicture();
       }
       ToastSuccess('Changes saved successfully.');
     } catch (error) {
@@ -405,16 +469,15 @@ export default function Page() {
 
         <ul className="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm/6">
           <li className="py-6">
-            <h2 className="font-semibold">Profile Picture</h2>
             <EditImage
               onLoad={onLoadProfilePicture}
               data={profilePicture}
               setData={setProfilePicture}
               percentage={ProfilePicturePercentaje}
+              title='Profile Picture'
             />
           </li>
           <li className="py-6">
-            <h2 className="font-semibold">Banner Picture</h2>
             <EditImage
               onLoad={onLoadBannerPicture}
               data={bannerPicture}
