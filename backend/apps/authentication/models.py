@@ -12,12 +12,12 @@ from utils.string_utils import sanitize_username
 class UserAccountManager(BaseUserManager):
 
     RESTRICTED_USERNAMES = ["admin", "undefined", "null", "superuser", "root", "system"]
-    
+
     def create_user(self, email, password=None, **extra_fields):
 
         if not email:
             raise ValueError("Users must have an email address.")
-        
+
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -27,28 +27,23 @@ class UserAccountManager(BaseUserManager):
 
         if not first_name or not last_name:
             raise ValueError("Users must have a first name and last name")
-        
+
         user.first_name = first_name
         user.last_name = last_name
 
         username = extra_fields.get("username", None)
-        
+
         if username:
-            sanitize_username = sanitize_username(username)
+            sanitized_username = sanitize_username(username)  # Asignar aquí si username existe
 
             # Verificar si el nombre de usuario está en la lista de restringidos
-            if sanitize_username.lower() in self.RESTRICTED_USERNAMES:
-                raise ValueError(f"The username '{sanitize_username}' is not allowed.")
-            
-            user.username = sanitize_username
-        
-        user.first_name = first_name
-        user.last_name = last_name
+            if sanitized_username.lower() in self.RESTRICTED_USERNAMES:
+                raise ValueError(f"The username '{sanitized_username}' is not allowed.")
 
-        username = extra_fields.get("username", None)
-        if username and username.lower() in self.RESTRICTED_USERNAMES:
-            raise ValueError(f"The username '{username}' is not allowed.")
-        
+            user.username = sanitized_username
+        else:
+            user.username = None  # O podrías generar un username por defecto o lanzar un error
+
         user.save(using=self._db)
 
         return user

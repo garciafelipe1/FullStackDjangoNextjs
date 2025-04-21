@@ -41,7 +41,22 @@ class GetMyProfilePictureView(StandardAPIView):
         picture_url = request.build_absolute_uri(profile.profile_picture.url) 
 
         return self.response({"profile_picture_url": picture_url})
-    
+
+
+class GetMyBannerPictureView(StandardAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        user = request.user
+        profile = get_object_or_404(UserProfile, user=user)
+        print(f"Profile banner:{profile.profile_banner}")
+        if not profile.profile_banner:
+            return Response("No banner picture found.", status=404)
+
+        picture_url = request.build_absolute_uri(profile.profile_banner.url) 
+
+        return self.response({"banner_picture_url": picture_url}) 
     
 class UpdateUserProfileView(StandardAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -60,6 +75,8 @@ class UpdateUserProfileView(StandardAPIView):
         youtube = request.data.get("youtube", None)
         tiktok = request.data.get("tiktok", None)
         github = request.data.get("github", None)
+        snapchat = request.data.get("snapchat", None)
+        twitter = request.data.get("twitter", None)
         
 
         try:
@@ -76,7 +93,6 @@ class UpdateUserProfileView(StandardAPIView):
                 profile.instagram = sanitize_url(instagram)
             if facebook:
                 profile.facebook = sanitize_url(facebook)
-            
             if linkedin:
                 profile.linkedin = sanitize_url(linkedin)
             if youtube:
@@ -87,6 +103,11 @@ class UpdateUserProfileView(StandardAPIView):
                 profile.github = sanitize_url(github)
             if website:
                 profile.website = sanitize_url(website)
+            if snapchat:
+                profile.snapchat = sanitize_url(snapchat)
+            if twitter:
+                profile.twitter = sanitize_url(twitter)
+                
 
             profile.save()
 
@@ -121,3 +142,32 @@ class UploadProfilePictureView(APIView):
         profile.save()
 
         return Response({"message": "Profile picture has been updated."}, status=200)
+    
+
+class UploadBannerPictureView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        # Imprimir request.FILES
+        print("request.FILES:", request.FILES)
+        # Imprimir request.POST
+        print("request.POST:", request.POST)
+
+        user = request.user
+        try:
+            profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            return Response({"error": "UserProfile not found."}, status=404)
+
+        uploaded_file = request.FILES.get("file")
+        if not uploaded_file:
+            return Response({"results": "No file uploaded."}, status=400)
+
+        profile.profile_banner = uploaded_file  # Django se encarga de guardarlo
+        profile.save()
+
+        return Response({"message": "Profile picture has been updated."}, status=200)
+    
+    
