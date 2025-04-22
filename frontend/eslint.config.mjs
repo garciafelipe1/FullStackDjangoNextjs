@@ -27,6 +27,7 @@ const eslintConfig = [
       'prettier/prettier': 'error',
       'react/jsx-props-no-spreading': 'off',
       'import/no-extraneous-dependencies': 'off',
+      'react/no-danger': 'off',
     
     },
   },
