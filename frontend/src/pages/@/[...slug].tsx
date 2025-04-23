@@ -1,6 +1,8 @@
 
 import CustomTabs from '@/components/CustomTabs';
+import CreatePost from '@/components/pages/blog/CreatePost';
 import Layout from '@/hocs/Layout';
+import useCategories from '@/hooks/useCategories';
 import { IProfile } from '@/interfaces/auth/IProfile';
 import { IUser } from '@/interfaces/auth/IUser';
 import SanitizeContent from '@/utils/SanitizeContent';
@@ -116,7 +118,8 @@ export default function Page({
    const biographyPreview=sanitizedBio.slice(0,600);
    const isCustomer = user?.role === 'customer';
    
-
+   const {categories,loading:loadingCategories}=useCategories();
+   
   return (
     <div>
       <Image
@@ -181,7 +184,18 @@ export default function Page({
         <div>
           <CustomTabs
             titles={isCustomer ? ['Post'] : ['Post', 'Create Post']}
-            panels={isCustomer ? [PostsContent()] : [PostsContent(), CreatePostContent()]}
+            panels={
+              isCustomer
+                ? [PostsContent()]
+                : [
+                    PostsContent(),
+                    <CreatePost
+                      key={2}
+                      categories={categories}
+                      loadingCategories={loadingCategories}
+                    />,
+                  ]
+            }
             width="w-full"
           />
         </div>
