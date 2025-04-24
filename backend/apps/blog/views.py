@@ -144,6 +144,9 @@ class PostAuthorViews(StandardAPIView):
         title=sanitize_string(request.data.get("title",None))
         description=sanitize_string(request.data.get("description",""))
         content=sanitize_html(request.data.get("content",None))
+        post_status=sanitize_string(request.data.get("status","draft"))
+        
+        thumbnail = request.FILES.get('thumbnail')
         
         keywords=sanitize_string(request.data.get("keywords",""))
         slug=slugify(request.data.get("slug",None))
@@ -162,7 +165,9 @@ class PostAuthorViews(StandardAPIView):
                 content=content,
                 keywords=keywords,
                 slug=slug,
-                category=category
+                category=category,
+                thumbnail=thumbnail,
+                status=post_status
             )
             
         
@@ -179,7 +184,7 @@ class PostAuthorViews(StandardAPIView):
         except Exception as e:
             return self.error(f"Error creating post: {str(e)}")
   
-        return self.response(f"Post '{post.title}' created successfully")
+        return self.response(f"Post '{post.title}' created successfully",status=status.HTTP_201_CREATED)
     
     
     def delete(self, request):
@@ -430,6 +435,7 @@ class CategoryListView(StandardAPIView):
             cache_key = f"category_list:{page}:{ordering}:{sorting}:{search}:{parent_slug}"
             cached_categories = cache.get(cache_key)
             if cached_categories:
+                
                 # Serializar los datos del caché
                 serialized_categories = CategoryListSerializer(cached_categories, many=True).data
                 # Incrementar impresiones en Redis para los posts del caché

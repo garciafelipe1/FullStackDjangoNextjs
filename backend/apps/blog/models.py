@@ -106,7 +106,7 @@ class Post(models.Model):
     thumbnail = models.ImageField(upload_to=blog_thumbnail_directory)
     
     keywords = models.CharField(max_length=128)
-    slug = models.CharField(max_length=128)
+    slug = models.CharField(max_length=128,unique=True)
     
     category=models.ForeignKey(Category, on_delete=models.CASCADE)
     
