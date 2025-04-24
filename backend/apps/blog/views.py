@@ -6,6 +6,7 @@ from rest_framework import permissions
 from django.db.models.functions import Coalesce
 from django.db.models import Q,F,Value
 from rest_framework import status
+from bs4 import BeautifulSoup
 
 import redis
 
@@ -170,15 +171,17 @@ class PostAuthorViews(StandardAPIView):
                 status=post_status
             )
             
-        
-            headings=request.data.get("headings",[]) 
-            for heading_data in headings:
+            soup=BeautifulSoup(content,"html.parser")
+            headings=soup.find_all(["h1","h2","h3","h4","h5","h6"])
+             
+            for order,heading in enumerate(headings,start=1):
+                level= int(heading.name[1])
                 Heading.objects.create(
                     post=post,
-                    title=heading_data.get("title"),
-                    slug=heading_data.get("slug"),
-                    level=heading_data.get("level"),
-                    order=heading_data.get("order")
+                    title=heading.get_text(strip=True),
+                    slug=slugify(heading.get_text(strip=True)),
+                    level=level,
+                    order=order
                 )
                  
         except Exception as e:
