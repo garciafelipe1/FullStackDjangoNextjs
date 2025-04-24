@@ -19,10 +19,10 @@ import validator from 'validator';
 import EditRichText from '@/components/forms/EditRichText';
 import EditImage from '@/components/forms/EditImage';
 import useProfilePicture from '@/hooks/UseProfilePicture';
-import { uploadAndGetLocalURL } from '@/utils/local/FetchPresignedurl';
+
 import useBannerPicture from '@/hooks/UseBannerPicture';
 
-import parseCookies from '@/utils/cookies/parseCookies';
+
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import verifyAccess from '@/utils/api/auth/VerifyAccess';
 

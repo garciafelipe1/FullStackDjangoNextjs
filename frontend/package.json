@@ -21,7 +21,7 @@
     "cookie": "^1.0.2",
     "fetch-blob": "^4.0.0",
     "formdata-node": "^6.0.3",
-    "formidable": "^3.5.2",
+    "formidable": "^3.5.4",
     "install": "^0.13.0",
     "lucide-react": "^0.487.0",
     "moment": "^2.30.1",
