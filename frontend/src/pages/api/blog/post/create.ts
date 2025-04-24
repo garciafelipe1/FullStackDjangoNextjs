@@ -35,8 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             reject(err);
             return;
           }
-          console.log('Fields:', fields);
-          console.log('Files:', files);
+          
           resolve({ fields, files });
         });
       },

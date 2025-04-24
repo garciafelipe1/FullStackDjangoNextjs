@@ -55,6 +55,7 @@ export default function CreatePost({ categories, loadingCategories }: ComponentP
 
   
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    
     e.preventDefault();
     if (isEmpty(content)) {
       ToastError('Content cannot be empty');
@@ -86,8 +87,19 @@ export default function CreatePost({ categories, loadingCategories }: ComponentP
       });
 
       const data = await res.json();
+      
       if (res.ok) {
         ToastSuccess(data.results || `Post '${title}' created successfully!`);
+        // Limpiar los campos del formulario después de la publicación exitosa
+        setTitle('');
+        setdescription('');
+        setContent('');
+        setKeywords('');
+        setSlug('');
+        setCategory('');
+        setStatus('draft'); // O el estado inicial que desees
+        setThumbnail(null); // Restablecer la imagen seleccionada
+
         // ...
       } else {
         ToastError(data.error || `Failed to create post: ${res.statusText}`);
@@ -98,6 +110,7 @@ export default function CreatePost({ categories, loadingCategories }: ComponentP
     } finally {
       setLoading(false);
     }
+
   };
 
   return (
