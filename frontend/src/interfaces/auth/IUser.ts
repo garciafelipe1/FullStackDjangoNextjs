@@ -11,4 +11,6 @@ export interface IUser {
   login_otp_used: boolean;
   otp_created_at: string;
   qr_code: string;
+  profile_picture:string
+
 }

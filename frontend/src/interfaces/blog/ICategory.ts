@@ -6,3 +6,9 @@ export interface ICategory {
   thumbnail: string;
   slug: string;
 }
+
+export interface ICategoryList {
+  name: string;
+  slug: string;
+  thumbnail: string;
+}

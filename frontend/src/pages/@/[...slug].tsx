@@ -1,10 +1,14 @@
-
 import CustomTabs from '@/components/CustomTabs';
 import CreatePost from '@/components/pages/blog/CreatePost';
+import ListPosts from '@/components/pages/blog/ListPosts';
 import Layout from '@/hocs/Layout';
 import useCategories from '@/hooks/useCategories';
+import usePosts from '@/hooks/usePosts';
+import usePostsAuthor from '@/hooks/usePostsAuthor';
+
 import { IProfile } from '@/interfaces/auth/IProfile';
 import { IUser } from '@/interfaces/auth/IUser';
+import { RootState } from '@/redux/reducers';
 import SanitizeContent from '@/utils/SanitizeContent';
 import { CheckBadgeIcon } from '@heroicons/react/24/solid';
 
@@ -12,7 +16,7 @@ import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsT
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactElement, useState } from 'react';
-
+import { useSelector } from 'react-redux';
 
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext,
@@ -50,18 +54,16 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 };
 
-function PostsContent() {
-  return <div key={1}>Posts</div>;
-}
 function CreatePostContent() {
-  return <div key={2}>Create Post</div>;
+  return <div key={1}>Create Post</div>;
 }
-
 
 export default function Page({
   profile,
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const myUser = useSelector((state: RootState) => state.auth.user);
+
   const social = [
     {
       name: 'URL',
@@ -110,16 +112,33 @@ export default function Page({
     },
   ];
 
-   const sanitizedBio = SanitizeContent(profile?.biography);
-   const [isExpand, setIsExpand] = useState<boolean>(false);
-   const toggleExpanded=()=>{
-     setIsExpand(!isExpand);
-   }
-   const biographyPreview=sanitizedBio.slice(0,600);
-   const isCustomer = user?.role === 'customer';
-   
-   const {categories,loading:loadingCategories}=useCategories();
-   
+  const sanitizedBio = SanitizeContent(profile?.biography);
+  const [isExpand, setIsExpand] = useState<boolean>(false);
+  const toggleExpanded = () => {
+    setIsExpand(!isExpand);
+  };
+  const biographyPreview = sanitizedBio.slice(0, 600);
+  const isCustomer = user?.role === 'customer';
+  const isOwner = myUser?.username === user?.username;
+
+  const { categories, loading: loadingCategories } = useCategories();
+
+  // Enlistar nuestros posts si estamos en nuestro perfil
+  const {
+    posts: authorPosts,
+    loading: loadingAuthorPosts,
+    loading: loadingMoreAuthorPosts,
+    loadMore: loadMoreAuthorPosts,
+  } = usePostsAuthor({ isOwner });
+
+  // Enlistar los posts de alguien más
+  const authorHook = usePostsAuthor({ isOwner });
+  const otherUserHook = usePosts({ username: user?.username });
+
+  const { posts, loading, loadingMore, loadMore, nextUrl, handleDelete, loadingDelete } = isOwner
+    ? authorHook
+    : otherUserHook;
+
   return (
     <div>
       <Image
@@ -159,7 +178,6 @@ export default function Page({
                     </Link>
                   );
                 }
-
                 return null;
               })}
             </div>
@@ -170,7 +188,6 @@ export default function Page({
           {!isExpand && (
             <div className="dark:from-dark-main absolute bottom-0 h-32 w-full bg-gradient-to-t from-white dark:to-transparent" />
           )}
-
           <div>
             <button
               onClick={toggleExpanded}
@@ -181,19 +198,42 @@ export default function Page({
             </button>
           </div>
         </div>
-        <div>
+        <div className="mt-2">
           <CustomTabs
-            titles={isCustomer ? ['Post'] : ['Post', 'Create Post']}
+            titles={isOwner && !isCustomer ? ['Post', 'Create Post'] : ['Post']}
             panels={
-              isCustomer
-                ? [PostsContent()]
-                : [
-                    PostsContent(),
+              isOwner && !isCustomer
+                ? [
+                    <div className="mt-6" key={1}>
+                      <ListPosts
+                        loading={loading}
+                        key={1}
+                        posts={posts}
+                        loadingMore={loadingMore}
+                        nextUrl={nextUrl}
+                        loadMore={loadMore}
+                        handleDelete={handleDelete}
+                        loadingDelete={loadingDelete}
+                      />
+                    </div>,
                     <CreatePost
                       key={2}
                       categories={categories}
                       loadingCategories={loadingCategories}
                     />,
+                  ]
+                : [
+                    <div className="mt-6" key={1}>
+                      <ListPosts
+                        key={1}
+                        posts={posts}
+                        loadingMore={loadingMore}
+                        nextUrl={nextUrl}
+                        loadMore={loadMore}
+                        handleDelete={handleDelete}
+                        loadingDelete={loadingDelete}
+                      />
+                    </div>,
                   ]
             }
             width="w-full"
