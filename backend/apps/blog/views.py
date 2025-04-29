@@ -207,9 +207,28 @@ class PostAuthorViews(StandardAPIView):
         
         post.delete()
         
+        self._invalidate_post_list_cache()
+        self._invalidate_post_detail_cache(post_slug)
         
         
         return self.response(f"post {post.title} deleted successfuly")
+    
+    def _invalidate_post_list_cache(self):
+        
+        
+        cache_keys=cache.keys("post_list:*")
+        
+        for key in cache_keys:
+            cache.delete(key)
+
+    def _invalidate_post_detail_cache(self,slug):
+        
+        
+        cache_keys=cache.keys("post_datail:*")
+        
+        for key in cache_keys:
+            cache.delete(key)
+            
 
 class PostPagination(PageNumberPagination):
     page_size = 10  
@@ -322,6 +341,12 @@ class PostListView(StandardAPIView):
             return self.response([], status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             raise APIException(detail=f"An unexpected error occurred: {str(e)}")
+        
+    
+              
+        
+        
+        
 class PostDetailView(StandardAPIView):
     
 

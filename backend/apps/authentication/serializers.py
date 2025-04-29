@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer
-
+from apps.user_profile.models import UserProfile
 from django.contrib.auth import get_user_model
 
 User= get_user_model()
@@ -12,7 +12,8 @@ class UserCreateSerializer(UserCreateSerializer):
         field= '__all__'
     
 class UserSerializer(serializers.ModelSerializer):
-    qr_code=serializers.URLField(source='get_qr_code')   
+    qr_code=serializers.URLField(source='get_qr_code')
+    
     
     class Meta:
         model = User
@@ -29,7 +30,10 @@ class UserSerializer(serializers.ModelSerializer):
             'login_otp_used',
             'qr_code',
             'otp_created_at',
+            
         ]
+        
+        
 
 class UserPublicSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,5 +46,7 @@ class UserPublicSerializer(serializers.ModelSerializer):
             'role',
             'verified',
             
+            
         ]
-        
+    
+    

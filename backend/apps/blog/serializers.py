@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from apps.authentication.serializers import UserPublicSerializer
 from .models import (
     Post,
     Category,
@@ -105,6 +106,7 @@ class PostListSerializer(serializers.ModelSerializer):
     category=CategorySerializer()
     view_count=serializers.SerializerMethodField()
     
+    
 
     class Meta:
         model=Post
@@ -115,7 +117,10 @@ class PostListSerializer(serializers.ModelSerializer):
             "thumbnail",
             "slug",
             "category",
-            "view_count"
+            "view_count",
+            "update_at",
+            "created_at",
+            
         ]
     def get_view_count(self, obj):
         try:
