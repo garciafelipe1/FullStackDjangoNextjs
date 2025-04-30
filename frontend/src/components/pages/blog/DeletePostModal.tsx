@@ -35,7 +35,7 @@ export default function DeletPostModal({open, setOpen,post,handleDelete,loadingD
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">
-                     Delete{post?.title}
+                     {post?.title}
                   </p>
                 </div>
               </div>
@@ -45,14 +45,14 @@ export default function DeletPostModal({open, setOpen,post,handleDelete,loadingD
                 type="button"
                 disabled={loadingDelete}
                 onClick={()=>handleDelete?.(post?.slug!)}
-                className="inline-flex w-full justify-center rounded-md bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="inline-flex w-full justify-center rounded-md bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-900 focus-visible:outline  focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 {
                     loadingDelete ? 
-                    <LoadingMoon/> :"Delete"
+                    <LoadingMoon/> :"Delete Post"
                 
                 }
-                Delete Post
+                 
               </button>
             </div>
           </DialogPanel>

@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import DeletPostModal from "./DeletePostModal";
+import EditPostModal from "./EditPostModal";
 
 interface ComponentsProps {
   post: IPostsList;
@@ -18,7 +19,7 @@ export default function ListPostCard({post,handleDelete,loadingDelete}:Component
     
     const user=useSelector((state:RootState) => state.auth.user);
     const [openDelete,setOpenDelete]=useState<boolean>(false)
-    // const [openEdit, setOpenEdit] = useState<boolean>(false);
+    const [openEdit, setOpenEdit] = useState<boolean>(false);
     return (
       <article key={post.id} className="relative isolate flex flex-col gap-8 lg:flex-row">
         {post?.thumbnail && (
@@ -56,7 +57,13 @@ export default function ListPostCard({post,handleDelete,loadingDelete}:Component
           </div>
           <div className="mt-6 flex border-t border-gray-900/5 pt-6">
             <div className="ml-auto flex items-center gap-x-4">
-              <button type="button" className="text-sm font-medium text-blue-600 hover:underline">
+              <button
+                onClick={() => {
+                  setOpenEdit(!openDelete);
+                }}
+                type="button"
+                className="text-sm font-medium text-blue-600 hover:underline"
+              >
                 Edit
               </button>
               <button
@@ -73,9 +80,10 @@ export default function ListPostCard({post,handleDelete,loadingDelete}:Component
               open={openDelete}
               setOpen={setOpenDelete}
               post={post}
-              handleDelete={handleDelete || (()=> Promise.resolve())} 
+              handleDelete={handleDelete || (() => Promise.resolve())}
               loadingDelete={loadingDelete || false}
             />
+            <EditPostModal open={openEdit} setOpen={setOpenEdit} slug={post?.slug} />
           </div>
         </div>
       </article>

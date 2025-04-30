@@ -1,6 +1,13 @@
 import { IUser } from "../auth/IUser";
-import { ICategoryList } from "./ICategory";
+import { ICategory, ICategoryList } from './ICategory';
 import { IHeading } from "./IHeading";
+
+
+
+
+
+
+
 
 export interface IPost {
   id: string;
@@ -11,14 +18,14 @@ export interface IPost {
   thumbnail: string;
   keywords: string;
   slug: string;
-  category: string;
+  category: ICategory;
   created_at: string;
   update_at: string;
-  headings: IHeading[];
   status: string;
+  headings: IHeading[];
   view_count: number;
-  has_liked: boolean;
   comments_count: number;
+  has_liked: boolean;
   likes_count: number;
 }
 
@@ -34,4 +41,5 @@ export interface IPostsList {
   view_count: string;
   user: IUser;
   nextUrl: string;
-} 
+}
+

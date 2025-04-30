@@ -7,7 +7,7 @@ import EditSlug from "@/components/forms/EditSlug";
 import EditText from "@/components/forms/EditText";
 import LoadingMoon from "@/components/loaders/LoadingMoon";
 import { ToastError, ToastSuccess } from "@/components/toast/toast";
-import { ICategory } from "@/interfaces/blog/ICategory";
+import { ICategoryList } from "@/interfaces/blog/ICategory";
 import createPost, { CreatePostProps } from "@/utils/api/blog/post/Create";
 
 
@@ -17,7 +17,7 @@ import { useState } from "react";
 
 
 interface ComponentProps{
-    categories:ICategory[]
+    categories:ICategoryList[]
     loadingCategories:boolean;
 }
 
@@ -123,6 +123,7 @@ export default function CreatePost({ categories, loadingCategories }: ComponentP
         title="Thumbail"
         data={thumbnail}
         setData={setThumbnail}
+        percentage={percentage}
       />
       <EditKeywords title="Keywords" data={keywords} setData={setKeywords} required />
       <EditSlug title="Slug" data={slug} setData={setSlug} required />

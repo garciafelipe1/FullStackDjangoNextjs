@@ -3,6 +3,8 @@ import CreatePost from '@/components/pages/blog/CreatePost';
 import ListPosts from '@/components/pages/blog/ListPosts';
 import Layout from '@/hocs/Layout';
 import useCategories from '@/hooks/useCategories';
+
+import usePostCategories from '@/hooks/usePostCategories';
 import usePosts from '@/hooks/usePosts';
 import usePostsAuthor from '@/hooks/usePostsAuthor';
 
