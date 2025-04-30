@@ -47,6 +47,40 @@ from rest_framework.pagination import PageNumberPagination
 redis_client=redis.Redis(host=settings.REDIS_HOST,port=6379,db=0)
 
 
+class CategoriesListView(StandardAPIView):
+    permission_classes = [permissions.AllowAny]
+    
+    def get(self,request):
+        
+        categories=Category.objects.all()
+        
+        serialized_categories=CategoryListSerializer(categories,many=True).data
+        
+        
+        return self.response(serialized_categories)
+
+
+class DetailPostView(StandardAPIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        """
+        Obtener la informacion de un post
+        """
+
+        slug = request.query_params.get('slug', None)
+
+        if not slug:
+            raise ValueError("Slug parameter must be provided")
+
+        try:
+            post = Post.objects.get(slug=slug)
+        except Post.DoesNotExist:
+            raise NotFound(detail=f"No post found for {slug}")
+        
+        serialized_post = PostSerializer(post, context={'request': request}).data
+
+        return self.response(serialized_post)
 class PostAuthorViews(StandardAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
@@ -68,64 +102,64 @@ class PostAuthorViews(StandardAPIView):
 
 
     def put(self, request):
-        
-        user=request.user
+        user = request.user
         if user.role == "customer":
-            return self.error("you do noy have permission to create post")
-        
-        post_slug=request.data.get("post_slug",None)
-        
+            return self.error("You do not have permission to edit post")
+
+        post_slug = request.data.get("post_slug")
         if not post_slug:
-            raise NotFound(detail="Post slug  must be provided")
-        
+            return self.error("Missing post_slug", status=400)
+
+        title = sanitize_string(request.data.get("title"))
+        description = sanitize_string(request.data.get("description"))
+        content = sanitize_html(request.data.get("content"))
+        post_status = sanitize_string(request.data.get("status", "draft"))
+        keywords = sanitize_string(request.data.get("keywords", ""))
+        slug = slugify(request.data.get("slug"))
+        thumbnail = request.FILES.get('thumbnail')
+        category_slug = slugify(request.data.get("category"))
+
         try:
             post = Post.objects.get(slug=post_slug,user=user)
         except Post.DoesNotExist:
-            raise NotFound(f"Post {post_slug} does not exist.")
+            raise NotFound(f"Post '{post_slug}' does not exist.")
+
+        try:
+            category = Category.objects.get(slug=category_slug)
+        except Category.DoesNotExist:
+            return self.error(f"Category '{category_slug}' does not exist", status=400)
+
+        existing_post = Post.objects.filter(slug=slug).exclude(id=post.id).first()
+        if existing_post:
+            return self.error(f"The slug '{slug}' already exists for another post.")
         
-        title=sanitize_string(request.data.get("title",None))
-        description = sanitize_string(request.data.get("description", None))
-        content=sanitize_html(request.data.get("content",None))
-        post_status=sanitize_string(request.data.get("status","draft"))
-        category_slug=slugify(request.data.get("category",post.category.slug))
+        post.title = title
+        post.description = description
+        post.content = content
+        post.status = post_status
+        post.keywords = keywords
+        post.slug = slug
+        post.thumbnail = thumbnail
+        post.category = category
         
-        
-        if category_slug:
-            try:
-                category=Category.objects.get(slug=category_slug)
-            except Category.DoesNotExist:
-                return self.error(f"Category '{category_slug}' does not exist",status=400)
-            
-            post.category=category
- 
-        if title:
-            post.title=title
-        
-        if description is not None:
-            post.description = description
-        
-        if content:
-            post.content=content
-        
-        
-        
-        post.status=post_status
-        
-        headings=request.data.get("headings",[])
-        if headings:
-            post.headings.all().delete()
-            for heading_data in headings:
-                Heading.objects.create(
-                    post=post,
-                    title=heading_data.get("title"),
-                    level=heading_data.get("level"),
-                    order=heading_data.get("order"),
-                )
-        
-        post.save()
-        
-        
-        return self.response(f"post {post.title} updated successfuly")
+        soup = BeautifulSoup(content, "html.parser")
+        headings = soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
+
+        for order, heading in enumerate(headings, start=1):
+            level = int(heading.name[1])
+            Heading.objects.create(
+                post=post,
+                title=heading.get_text(strip=True),
+                slug=slugify(heading.get_text(strip=True)),
+                level=level,
+                order=order
+            )
+        post.save()    
+       
+        serialized_post = PostSerializer(post, context={'request': request}).data
+
+        return self.response(serialized_post)
+       
       
     def post(self, request):
         

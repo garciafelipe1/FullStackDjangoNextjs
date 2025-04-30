@@ -17,6 +17,8 @@ from .views import(
     PostLikeView,
     PostShareView,
     PostAuthorViews,
+    DetailPostView,
+    CategoriesListView,
     ) 
 
 urlpatterns = [
@@ -27,6 +29,7 @@ urlpatterns = [
     path('generate_post/', GenerateFakePostView.as_view()),
     path('generate_analytics/', GenerateFakeAnalyticsView.as_view()),
     path('categories/', CategoryListView.as_view(), name="category-list"),
+    path('categories/list/', CategoriesListView.as_view()),
     path('category/increment_clicks/', IncrementCategoryClicksView.as_view(), name="increment-category-click"),
     path('category/posts/', CategoryDetailView.as_view(), name="category-posts"),
     path('post/comment/', PostCommentViews.as_view()),
@@ -37,6 +40,10 @@ urlpatterns = [
     path('post/like/', PostLikeView.as_view()),
     path('post/share/', PostShareView.as_view()),
     path('post/author/',PostAuthorViews.as_view()),
+    path('post/get/',DetailPostView.as_view()),
+    path('post/get/',DetailPostView.as_view()),
+    
+    
     
     
     
