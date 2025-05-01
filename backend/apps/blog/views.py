@@ -340,7 +340,9 @@ class PostListView(StandardAPIView):
                 posts = posts.filter(category_queries)
             
             # Filtrar por posts destacados
-            if is_featured:
+            
+            if is_featured :
+                
                 # Convertir el valor del parámetro a booleano
                 is_featured = is_featured.lower() in ['true', '1', 'yes']
                 posts = posts.filter(featured=is_featured)

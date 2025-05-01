@@ -105,6 +105,9 @@ class Post(models.Model):
     content = RichTextField()
     thumbnail = models.ImageField(upload_to=blog_thumbnail_directory)
     
+    
+    featured=models.BooleanField(default=False)
+    
     keywords = models.CharField(max_length=128)
     slug = models.CharField(max_length=128,unique=True)
     

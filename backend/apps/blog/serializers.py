@@ -120,6 +120,7 @@ class PostListSerializer(serializers.ModelSerializer):
             "view_count",
             "update_at",
             "created_at",
+            "featured",
             
         ]
     def get_view_count(self, obj):

@@ -41,7 +41,7 @@ urlpatterns = [
     path('post/share/', PostShareView.as_view()),
     path('post/author/',PostAuthorViews.as_view()),
     path('post/get/',DetailPostView.as_view()),
-    path('post/get/',DetailPostView.as_view()),
+    
     
     
     

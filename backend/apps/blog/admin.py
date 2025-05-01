@@ -65,11 +65,13 @@ class PostAdmin(admin.ModelAdmin):
                 'slug',
                 'category',
                 'user',
+                
             )
         }),
         ('Status & Date',{
             'fields':(
                 'status',
+                'featured',
                 'created_at',
                 'update_at',
             )
