@@ -7,6 +7,7 @@ export interface FetchPostProps {
   sorting?:string
   ordering?:string
   author?:string
+  is_featured?:boolean
   
   // categories?:string
   

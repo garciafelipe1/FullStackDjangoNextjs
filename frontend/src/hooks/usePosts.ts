@@ -7,11 +7,12 @@ import fetchPosts, { FetchPostProps } from "@/utils/api/blog/post/List";
 import { use, useCallback, useEffect, useState } from "react"
 
 
-interface ComponentProps{
-    username?:string
+interface ComponentProps {
+  username?: string;
+  showFeatured?: boolean
 }
 
-export default function usePosts({ username }: ComponentProps) {
+export default function usePosts({ username, showFeatured }: ComponentProps) {
   const [posts, setPosts] = useState<IPostsList[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [count, setCount] = useState<number>(0);
@@ -21,6 +22,7 @@ export default function usePosts({ username }: ComponentProps) {
   const [ordering, setOrdering] = useState<string>('');
   const [sorting, setSorting] = useState<string>('');
   const [searchBy, setSearchBy] = useState<string>('');
+  const [isFeatured, setIsFeatured] = useState<boolean>(showFeatured || false);
   const [author, setAuthor] = useState<string>(username || '');
 
   const listPosts = useCallback(
@@ -35,6 +37,7 @@ export default function usePosts({ username }: ComponentProps) {
           sorting,
           search,
           author,
+          is_featured: isFeatured,
         };
 
         const res = await fetchPosts(fetchPostsData);
@@ -50,7 +53,7 @@ export default function usePosts({ username }: ComponentProps) {
         setLoading(false);
       }
     },
-    [pageSize, ordering, sorting,author],
+    [pageSize, ordering, sorting, author, isFeatured],
   );
 
   useEffect(() => {
@@ -78,6 +81,7 @@ export default function usePosts({ username }: ComponentProps) {
         const fetchPostsData: FetchPostProps = {
           p: params.p,
           page_size: params.page_size,
+          is_featured: isFeatured,
         };
 
         const res = await fetchPosts(fetchPostsData);
@@ -96,21 +100,20 @@ export default function usePosts({ username }: ComponentProps) {
   };
 
   const [loadingDelete, setLoadingDelete] = useState(false);
-      const handleDelete= async(slug:string)=>{
-        try{
-          setLoadingDelete(true);
-          const res=await deletePost({slug});
-          if (res.status===200){
-            ToastSuccess("post deleted successfully");
-            setPosts((prevPosts)=> prevPosts.filter((post)=>post.slug!==slug));
-          }
-        }catch(err){
-          ToastError("error deleting post")
-        }finally{
-          setLoadingDelete(false)
-        }
+  const handleDelete = async (slug: string) => {
+    try {
+      setLoadingDelete(true);
+      const res = await deletePost({ slug });
+      if (res.status === 200) {
+        ToastSuccess('post deleted successfully');
+        setPosts((prevPosts) => prevPosts.filter((post) => post.slug !== slug));
       }
-
+    } catch (err) {
+      ToastError('error deleting post');
+    } finally {
+      setLoadingDelete(false);
+    }
+  };
 
   return {
     posts,
@@ -133,5 +136,6 @@ export default function usePosts({ username }: ComponentProps) {
     setAuthor,
     loadMore,
     onSubmitSearch,
+    setIsFeatured
   };
 }

@@ -28,6 +28,7 @@ export default function usePostsAuthor({isOwner}:ComponentProps) {
           };
 
           const res = await fetchAuthorPosts(fetchAuthorPostsData);
+          
           if (res.status === 200) {
             setPosts(res.results);
             setCount(res.count);

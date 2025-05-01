@@ -11,7 +11,7 @@ import EditPostModal from "./EditPostModal";
 interface ComponentsProps {
   post: IPostsList;
   handleDelete?: (slug: string) => Promise<void> ;
-  loadingDelete: boolean;
+  loadingDelete?: boolean;
 }
 
 

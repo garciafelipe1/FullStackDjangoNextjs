@@ -28,6 +28,7 @@ export default function DesktopNavbar() {
               />
             </NavbarLink>
             <NavbarLink  href="/contact">Contact</NavbarLink>
+            <NavbarLink  href="/blog">Blog</NavbarLink>
           </div>
           {/* middle side */}
           <div />

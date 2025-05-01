@@ -137,10 +137,8 @@ export default function Page({
   const authorHook = usePostsAuthor({ isOwner });
   const otherUserHook = usePosts({ username: user?.username });
 
-  const { posts, loading, loadingMore, loadMore, nextUrl, handleDelete, loadingDelete } = isOwner
-    ? authorHook
-    : otherUserHook;
-
+  const { posts, loading, loadingMore, loadMore, nextUrl, handleDelete, loadingDelete } = isOwner ? authorHook : otherUserHook;
+  
   return (
     <div>
       <Image

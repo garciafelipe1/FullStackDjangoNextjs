@@ -11,7 +11,7 @@ import { IHeading } from "./IHeading";
 
 export interface IPost {
   id: string;
-  user: string;
+  user: any;
   title: string;
   description: string;
   content: string;
@@ -20,7 +20,7 @@ export interface IPost {
   slug: string;
   category: ICategory;
   created_at: string;
-  update_at: string;
+  updated_at: string;
   status: string;
   headings: IHeading[];
   view_count: number;
@@ -32,14 +32,14 @@ export interface IPost {
 export interface IPostsList {
   id: string;
   title: string;
-  description: string;
-  thumbnail: string;
   updated_at: string;
   created_at: string;
+  description: string;
+  thumbnail: string;
   slug: string;
   category: ICategoryList;
   view_count: string;
   user: IUser;
-  nextUrl: string;
+  status: string;
 }
 
