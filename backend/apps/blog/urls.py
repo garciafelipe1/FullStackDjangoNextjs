@@ -1,4 +1,3 @@
-
 from django.urls import path
 from .views import(
     PostListView,
@@ -19,7 +18,8 @@ from .views import(
     PostAuthorViews,
     DetailPostView,
     CategoriesListView,
-    ) 
+    AuthorPostListView,
+) 
 
 urlpatterns = [
     path('posts/', PostListView.as_view(), name="post-list"),
@@ -41,10 +41,5 @@ urlpatterns = [
     path('post/share/', PostShareView.as_view()),
     path('post/author/',PostAuthorViews.as_view()),
     path('post/get/',DetailPostView.as_view()),
-    
-    
-    
-    
-    
-    
+    path('post/author/list/', AuthorPostListView.as_view(), name="author-post-list"),
 ]

@@ -105,7 +105,7 @@ class PostSerializer(serializers.ModelSerializer):
 class PostListSerializer(serializers.ModelSerializer):
     category=CategorySerializer()
     view_count=serializers.SerializerMethodField()
-    
+    user=UserPublicSerializer()
     
 
     class Meta:
@@ -121,6 +121,7 @@ class PostListSerializer(serializers.ModelSerializer):
             "update_at",
             "created_at",
             "featured",
+            "user",
             
         ]
     def get_view_count(self, obj):

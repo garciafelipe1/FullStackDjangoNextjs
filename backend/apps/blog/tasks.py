@@ -48,9 +48,12 @@ def sync_impressions_to_db():
             # Obtener impresiones de redis
             impressions = int(redis_client.get(key))
             if impressions == 0:
+                logger.debug(f"No hay impresiones para sincronizar para el post {post_id}, eliminando clave de Redis")
                 redis_client.delete(key)
                 continue
             
+            logger.info(f"Sincronizando {impressions} impresiones para el post {post_id}")
+
             # Obtener y crear instancia de category analytics
             analytics, created = PostAnalytics.objects.get_or_create(post=post)
 
@@ -63,8 +66,10 @@ def sync_impressions_to_db():
 
             # Eliminar la clave de redis despues de sincronizar
             redis_client.delete(key)
+            logger.info(f"Sincronización exitosa para el post {post_id}")
         except Exception as e:
-            print(f"Error syncing impressions for {key}: {str(e)}")
+            logger.error(f"Error sincronizando impresiones para la clave {key}: {str(e)}", exc_info=True)
+            continue
 
 
 @shared_task
@@ -88,8 +93,11 @@ def sync_category_impressions_to_db():
             # Obtener impresiones de redis
             impressions = int(redis_client.get(key))
             if impressions == 0:
+                logger.debug(f"No hay impresiones para sincronizar para la categoría {category_id}, eliminando clave de Redis")
                 redis_client.delete(key)
                 continue
+
+            logger.info(f"Sincronizando {impressions} impresiones para la categoría {category_id}")
 
             # Obtener y crear instancia de category analytics
             analytics, created = CategoryAnalytics.objects.get_or_create(category=category)
@@ -103,8 +111,10 @@ def sync_category_impressions_to_db():
 
             # Eliminar la clave de redis despues de sincronizar
             redis_client.delete(key)
+            logger.info(f"Sincronización exitosa para la categoría {category_id}")
         except Exception as e:
-            print(f"Error syncing impressions for {key}: {str(e)}")
+            logger.error(f"Error sincronizando impresiones para la clave {key}: {str(e)}", exc_info=True)
+            continue
 
         
         

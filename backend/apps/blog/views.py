@@ -271,8 +271,6 @@ class PostPagination(PageNumberPagination):
 
 
 class PostListView(StandardAPIView):
-    
-
     def get(self, request, *args, **kwargs):
         try:
             # Parametros de solicitud
@@ -288,15 +286,13 @@ class PostListView(StandardAPIView):
             cache_key = f"post_list:{search}:{sorting}:{ordering}:{author}:{categories}:{is_featured}:{page}"
             cached_posts = cache.get(cache_key)
             if cached_posts:
-                # Serializar los datos del caché
                 serialized_posts = PostListSerializer(cached_posts, many=True).data
-                # Incrementar impresiones en Redis para los posts del caché
                 for post in cached_posts:
-                    redis_client.incr(f"post:impressions:{post.id}")  # Usar `post.id`
+                    redis_client.incr(f"post:impressions:{post.id}")
                 return self.paginate(request, serialized_posts)
 
-            # Consulta inicial optimizada con nombres de anotación únicos
-            posts = Post.postobjects.all().select_related("category").annotate(
+            # Consulta inicial optimizada
+            posts = Post.postobjects.all().select_related("category", "user").annotate(
                 analytics_views=Coalesce(F("post_analytics__views"), Value(0)),
                 analytics_likes=Coalesce(F("post_analytics__likes"), Value(0)),
                 analytics_comments=Coalesce(F("post_analytics__comments"), Value(0)),
@@ -306,12 +302,10 @@ class PostListView(StandardAPIView):
             # Filtrar por autor
             if author:
                 posts = posts.filter(user__username=author)
+                if not posts.exists():
+                    return self.error(f"No se encontraron posts para el autor: {author}", status=status.HTTP_404_NOT_FOUND)
 
-            # Si no hay posts del autor, responder inmediatamente
-            if not posts.exists():
-                raise NotFound(detail=f"No posts found for author: {author}")
-            
-            # Filtrar por busqueda
+            # Resto de filtros y ordenamiento
             if search:
                 posts = posts.filter(
                     Q(title__icontains=search) |
@@ -373,10 +367,8 @@ class PostListView(StandardAPIView):
                 redis_client.incr(f"post:impressions:{post.id}")  # Usar `post.id`
 
             return self.paginate(request, serialized_posts)
-        except NotFound as e:
-            return self.response([], status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            raise APIException(detail=f"An unexpected error occurred: {str(e)}")
+            return self.error(f"Error inesperado: {str(e)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     
               
@@ -1067,3 +1059,30 @@ class GenerateFakeAnalyticsView(StandardAPIView):
             analytics.save()
             
         return self.response({"message":f"analiticas generadas para {analytics_to_generate} posts"}) 
+
+class AuthorPostListView(StandardAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            page = request.query_params.get("p", "1")
+            page_size = request.query_params.get("page_size", "12")
+            
+            cache_key = f"author_posts:{request.user.username}:{page}:{page_size}"
+            cached_posts = cache.get(cache_key)
+            
+            if cached_posts:
+                return self.paginate(request, cached_posts)
+            
+            posts = Post.objects.filter(user=request.user).select_related("category").order_by("-created_at")
+            
+            if not posts.exists():
+                return self.response([], status=status.HTTP_200_OK)
+            
+            serialized_posts = PostListSerializer(posts, many=True).data
+            cache.set(cache_key, serialized_posts, timeout=60 * 5)
+            
+            return self.paginate(request, serialized_posts)
+            
+        except Exception as e:
+            return self.error(f"Error al obtener los posts del autor: {str(e)}", status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
