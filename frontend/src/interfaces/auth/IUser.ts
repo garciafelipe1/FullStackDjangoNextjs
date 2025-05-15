@@ -12,5 +12,5 @@ export interface IUser {
   otp_created_at: string;
   qr_code: string;
   profile_picture:string
-
+  username:string
 }

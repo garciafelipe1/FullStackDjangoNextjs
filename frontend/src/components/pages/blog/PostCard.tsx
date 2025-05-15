@@ -32,7 +32,7 @@ export default function PostCard({ post }: ComponentProps) {
               {moment(post?.updated_at).fromNow()}
             </time>
             <Link
-              href={`blog/category/${post?.category?.slug}`}
+              href={`/category/${post?.category?.slug}`}
               className="relative z-10 rounded-full bg-gray-50 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100"
             >
               {post?.category?.name}
@@ -40,7 +40,7 @@ export default function PostCard({ post }: ComponentProps) {
           </div>
           <div className="group relative">
             <h3 className="mt-3 text-lg/6 font-semibold text-gray-900 group-hover:text-gray-600">
-              <Link href="https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80">
+              <Link href={`/@/${post?.user?.slug}/`}>
                 <span className="absolute inset-0" />
                 {post?.title}
               </Link>

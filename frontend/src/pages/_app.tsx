@@ -1,4 +1,5 @@
 import '@/styles/globals.css';
+import'@/styles/slider.css'
 import type { NextComponentType, NextPageContext } from 'next';
 import type { AppProps } from 'next/app';
 import { ToastContainer } from 'react-toastify';

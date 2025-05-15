@@ -37,7 +37,7 @@ export default function usePosts({ username, showFeatured }: ComponentProps) {
           sorting,
           search,
           author,
-          is_featured: isFeatured,
+          ...(showFeatured !==undefined && {is_featured:showFeatured}),
         };
 
         const res = await fetchPosts(fetchPostsData);
@@ -81,7 +81,7 @@ export default function usePosts({ username, showFeatured }: ComponentProps) {
         const fetchPostsData: FetchPostProps = {
           p: params.p,
           page_size: params.page_size,
-          is_featured: isFeatured,
+          ...(showFeatured !== undefined && { is_featured: showFeatured }),
         };
 
         const res = await fetchPosts(fetchPostsData);
