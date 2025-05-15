@@ -2,7 +2,7 @@
 import LoadingMoon from '@/components/loaders/LoadingMoon';
 import { IPostsList } from '@/interfaces/blog/IPost';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-import { CheckIcon } from '@heroicons/react/24/outline';
+
 
 interface ComponentProps {
   open: boolean;
@@ -49,7 +49,7 @@ export default function DeletPostModal({open, setOpen,post,handleDelete,loadingD
               >
                 {
                     loadingDelete ? 
-                    <LoadingMoon/> :"Delete Post"
+                    <LoadingMoon/> :"Delete Posst"
                 
                 }
                  
